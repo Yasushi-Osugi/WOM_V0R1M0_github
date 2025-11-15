@@ -1,0 +1,13 @@
+Product_name,Parent_node,Child_node,child_node_name,lot_size,leadtime,process_capa,long_vacation_weeks,LT_boat,LT_air,LT_qourier,weeks_year,SS_days,TAX_currency_condition,HS_code,customs_tariff_rate,price_elasticity,cost_standard_flag,AR_lead_time,AP_lead_time,PSI_graph_flag,buffering_stock_flag
+JPN_Koshihikari,root,supply_point,supply_point,10,1,4000,[],1,1,1,52,10,profile,1006.2,0,0,0,30,45,ON,OFF
+JPN_Koshihikari,supply_point,MOMKosihikari,MOMKosihikari,10,1,4000,"[8,15,20,21,22,50,   8+52,15+52,20+52,21+52,22+52,50+52,   8+52*2,15+52*2,20+52*2,21+52*2,22+52*2,50+52*2 ]",1,1,1,52,10,profile,1006.2,0,0,0,30,45,ON,OFF
+JPN_Koshihikari,MOMKosihikari,PADKosihikari,PADKosihikari,10,17,4000,[],1,1,1,52,10,profile,1006.2,0,0,0,30,45,ON,OFF
+JPN_RICE_1,root,supply_point,supply_point,10,1,4000,[],1,1,1,52,10,profile,1006.2,0,0,0,30,45,ON,OFF
+JPN_RICE_1,supply_point,MOMJPN,MOMJPN,10,1,4000,"[8,15,20,21,22,50,   8+52,15+52,20+52,21+52,22+52,50+52,   8+52*2,15+52*2,20+52*2,21+52*2,22+52*2,50+52*2 ]",1,1,1,52,10,profile,1006.2,0,0,0,30,45,ON,OFF
+JPN_RICE_1,MOMJPN,PADJPN,PADJPN,10,17,4000,[],1,1,1,52,10,profile,1006.2,0,0,0,30,45,ON,OFF
+Reserv_Rice,root,supply_point,supply_point,10,1,4000,[],1,1,1,52,10,profile,1006.2,0,0,0,30,45,ON,OFF
+Reserv_Rice,supply_point,MOMGSJP,MOMGSJP,10,1,4000,"[8,15,20,21,22,50,   8+52,15+52,20+52,21+52,22+52,50+52,   8+52*2,15+52*2,20+52*2,21+52*2,22+52*2,50+52*2 ]",1,1,1,52,10,profile,1006.2,0,0,0,30,45,ON,OFF
+Reserv_Rice,MOMGSJP,PADGSJP,PADGSJP,10,17,4000,[],1,1,1,52,10,profile,1006.2,0,0,0,30,45,ON,OFF
+CAL_RICE_1,root,supply_point,supply_point,10,1,4000,[],1,1,1,52,10,profile,1006.2,0,0,0,30,45,ON,OFF
+CAL_RICE_1,supply_point,MOMCAL,MOMCAL,10,1,4000,[],1,1,1,52,10,profile,1006.2,0,0,0,30,45,ON,OFF
+CAL_RICE_1,MOMCAL,PADCAL,PADCAL,10,17,4000,[],1,1,1,52,10,profile,1006.2,0,0,0,30,45,ON,OFF

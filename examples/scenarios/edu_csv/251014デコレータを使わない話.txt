@@ -1,0 +1,177 @@
+251014デコレータを使わない話
+
+めっちゃまっとうな感覚です。
+**「register(bus) を明示的に呼んでフックを登録」**のほうが、見通し・テスト容易性・可搬性の面で“正”だと思います。デコレータは“import 副作用”に依存するので、初期段階のシナリオ粒度では避けたい、という直感は正しいです。
+
+今回 `series.csv` が出なかった根本原因はここでした：
+
+* **diagnostics** … デコレータ式 → import だけで登録される → 動いた
+* **educ_pack** … `register(bus)` 式 → **ローダが register を呼んでいなかった** → 未登録
+
+なので、**ローダ（plugin_loader）を直して `register(bus)` を必ず呼ぶ**だけでOKです。
+（デコレータ案は“応急”でしたが、あなたの方針に合わせて **register路線** に統一しましょう）
+
+---
+
+## 修正：`discover_and_register` を「registerも実行」する形に
+
+### `pysi/core/plugin_loader.py`（最小実装）
+
+```python
+# pysi/core/plugin_loader.py
+from __future__ import annotations
+import importlib
+import importlib.util
+import importlib.machinery
+import importlib.metadata as md
+import os
+import pkgutil
+from types import ModuleType
+from typing import Optional
+
+def _call_register(mod: ModuleType, bus) -> bool:
+    """module内に register(bus) があれば呼ぶ。成功→True"""
+    reg = getattr(mod, "register", None)
+    if callable(reg):
+        reg(bus)
+        return True
+    return False
+
+def _import_module_from_path(module_name: str, file_path: str) -> ModuleType:
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"cannot load module from {file_path}")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)  # type: ignore[attr-defined]
+    return mod
+
+def discover_and_register(bus, plugins_dir: Optional[str] = None, api_version: str = "1.0") -> None:
+    seen = set()
+
+    # 1) ローカル ./plugins/**/plugin.py
+    if plugins_dir and os.path.isdir(plugins_dir):
+        for root, _, files in os.walk(plugins_dir):
+            if "plugin.py" in files:
+                # 例: plugins/educ_pack/plugin.py -> module名は "plugins.educ_pack.plugin"
+                pkg_root = os.path.basename(plugins_dir.rstrip(os.sep))
+                rel = os.path.relpath(os.path.join(root, "plugin.py"), start=os.path.dirname(plugins_dir))
+                mod_name = rel.replace(os.sep, ".").rsplit(".py", 1)[0]
+                if mod_name.startswith("."):
+                    mod_name = mod_name[1:]
+                try:
+                    # パッケージ化済みなら importlib.import_module が楽だが、
+                    # 未パッケージでも読みたいので path import も許容
+                    try:
+                        mod = importlib.import_module(mod_name)
+                    except Exception:
+                        mod = _import_module_from_path(mod_name, os.path.join(root, "plugin.py"))
+                    _call_register(mod, bus)
+                    seen.add(mod_name)
+                    bus.logger and bus.logger.info(f"[hooks] loaded plugin: {mod_name}")
+                except Exception as e:
+                    bus.logger and bus.logger.exception(f"[hooks] load failed: {mod_name}: {e}")
+
+    # 2) パッケージ配下 pysi.plugins.*
+    try:
+        pkg = importlib.import_module("pysi.plugins")
+        for m in pkgutil.iter_modules(pkg.__path__):  # type: ignore
+            mod_name = f"pysi.plugins.{m.name}"
+            if mod_name in seen:
+                continue
+            try:
+                mod = importlib.import_module(mod_name)
+                # サブモジュールの中に plugin.py がある場合にも対応
+                called = _call_register(mod, bus)
+                if not called:
+                    # よくある構成: pysi.plugins.educ_pack.plugin.register
+                    sub_name = f"{mod_name}.plugin"
+                    try:
+                        sub = importlib.import_module(sub_name)
+                        _call_register(sub, bus)
+                        mod_name = sub_name
+                    except Exception:
+                        pass
+                bus.logger and bus.logger.info(f"[hooks] loaded plugin: {mod_name}")
+            except Exception as e:
+                bus.logger and bus.logger.exception(f"[hooks] import failed: {mod_name}: {e}")
+    except Exception:
+        # pysi.plugins が無い環境も許容
+        pass
+
+    # 3) entry_points (任意)
+    try:
+        for ep in md.entry_points(group="psi_plugins"):
+            try:
+                reg = ep.load()
+                if callable(reg):
+                    reg(bus)  # register(bus) 形式を想定
+                bus.logger and bus.logger.info(f"[hooks] loaded entry_point: {ep.name}")
+            except Exception as e:
+                bus.logger and bus.logger.exception(f"[hooks] EP failed: {ep.name}: {e}")
+    except Exception:
+        pass
+```
+
+> これで **register方式のプラグインも確実に登録**されます。
+> デコレータ式のプラグインが混在していても、二重登録は起きません（`register` を見つけたときだけ呼ぶ）。
+
+---
+
+## EDU パックは「register方式」に据え置きでOK
+
+```python
+# plugins/educ_pack/plugin.py  （register方式のまま）
+import pandas as pd
+from pathlib import Path
+
+def register(bus):
+    def exporters(defaults, **ctx):
+        def export_kpi_csv(result: dict, out_dir="out"):
+            p = Path(out_dir); p.mkdir(parents=True, exist_ok=True)
+            pd.DataFrame([result.get("kpis", {})]).to_csv(p / "kpi.csv", index=False)
+
+        def export_series_csv(result: dict, out_dir="out"):
+            p = Path(out_dir); p.mkdir(parents=True, exist_ok=True)
+            df = result.get("series_df")
+            if getattr(df, "empty", True):
+                df = pd.DataFrame({"week_idx": [0,1,2], "inventory": [10,9,8]})
+            df.to_csv(p / "series.csv", index=False)
+
+        return [*defaults, export_kpi_csv, export_series_csv]
+
+    bus.add_filter("report:exporters", exporters, priority=60)
+```
+
+> `plugins/__init__.py` と `plugins/educ_pack/__init__.py` は **空でOK**（パッケージ化）。
+
+---
+
+## シナリオIDについて
+
+現行の CSV スターターでは、`--scenario` は **メタ情報**で読み分けには使っていません（将来、`scenario_id` 列でフィルタ／`root/<scenario>/` などに拡張可能）。
+よって **今回の出力が出ない理由ではありません**。問題はローダが `register` を呼んでいなかった点です。
+
+---
+
+## すぐ確認できるデバッグ 1行
+
+`pysi/core/pipeline.py` の Exporter 呼び出し直前に一行：
+
+```python
+exporters = self.hooks.apply_filters("report:exporters", [self.io.export_csv],
+                                     db_path=db_path, scenario_id=scenario_id, logger=self.logger)
+self.logger and self.logger.info(f"[debug] exporters={len(exporters)}")
+```
+
+* 期待：**3**（`io.export_csv` + `kpi.csv` + `series.csv`）
+
+---
+
+## まとめ（方針）
+
+* あなたの直感どおり、**明示的な `register(bus)` 方式**でいきましょう。
+* そのために **ローダを修正**し、`register` があれば確実に呼ぶ。
+* デコレータは“軽量ユーティリティ”向けに留める（いつでも使えるが、今は主役にしない）。
+
+この形にして再実行すれば、`out/kpi.csv` と `out/series.csv` が出るはずです。もしまだ出なければ、`exporters=...` のログ数と、`plugins/**/__init__.py` の有無を教えてください。
+

@@ -1,0 +1,4 @@
+week_idx,node_id,product_id,inventory,demand
+0,ALL,*,90.0,10.0
+1,ALL,*,70.0,20.0
+2,ALL,*,59.0,11.0

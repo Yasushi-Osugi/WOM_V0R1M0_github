@@ -1,0 +1,5 @@
+node_id,name,role
+FARM_01,Farm,source
+MILL_01,Mill,mill
+WH_01,Warehouse,warehouse
+RET_01,Retail,leaf

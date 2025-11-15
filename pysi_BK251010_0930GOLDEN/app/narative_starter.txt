@@ -1,0 +1,16 @@
+#narrative例（narrative.txt）：
+#
+#- Increase demand for RICE at TOKYO by 10% from 2026-W10 to 2026-W20
+#- Shutdown PLANT_A during 2026-W30..2026-W32
+#- Set leadtime of RICE at PORT_JP to 3w
+
+
+生成＆実行：
+
+# 1) ナラティブ → YAML化
+python -m pysi.app.narrative_compiler data\narrative.txt Baseline var\psi.sqlite > var\scenario.yaml
+
+# 2) 実行
+python -m pysi.app.scenario_runner --config var\scenario.yaml
+
+今はルールベースの軽量実装。将来は LLMでパーザを賢くしても、最後はこのYAMLに落とし込めばOK（安全&再現性）。

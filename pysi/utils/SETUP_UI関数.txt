@@ -1,0 +1,872 @@
+250511QA_planning_engine_refactoring
+
+
+ご質問ありがとうございます！大杉様が開発中の"Global Weekly PSI Planner"のコードに関する問題点とリファクタリングの方向性について、非常に詳細な説明をいただきました。以下の問題点を中心に、具体的なアドバイスを提供します：
+
+1. **`self`の使い分けによる混乱**（`PSIPlannerApp`クラスと`Node`クラスの`self`の違いによるコードの複雑さ）
+2. **クラスメソッド vs 外部関数**（どちらを選ぶべきか、メモリ消費や処理速度への影響）
+3. **リファクタリングの方向性**（`planning engine`部分の整理、再利用性の向上、見通しの良さ）
+
+以下、順番に回答し、必要に応じて具体的なコード例やリファクタリングの提案を行います。
+
+---
+
+### 1. `self`の使い分けによる混乱の解消
+
+#### 問題の整理
+- `PSIPlannerApp`クラス（GUI側）と`Node`クラス（データ構造側）で`self`が異なるクラスのインスタンスを指すため、コードを読んだりデバッグしたりする際に混乱が生じる。
+- 例えば、`self.demand_planning()`は`PSIPlannerApp`のメソッドで、`self`は`PSIPlannerApp`のインスタンスを指す。一方、`calcPS2I4demand`は`Node`クラスのメソッドで、`self`は`Node`のインスタンスを指す。
+- このような異なるクラスの`self`が混在すると、どの`self`が何を指しているのか追跡するのが難しくなり、コードの可読性やメンテナンス性が低下する。
+
+#### 解決策
+以下のアプローチで、`self`の混乱を軽減し、コードの構造を整理することを提案します：
+
+##### (1) クラスの責任を明確に分離
+- **GUIとロジックの分離**：`PSIPlannerApp`はGUIの管理（TkinterやMatplotlibの描画、ユーザー入力の処理）に特化させ、実際の計画ロジック（`demand_planning`や`calcPS2I4demand`など）は別のクラス（例：`PlanningEngine`）に移動する。
+- **データ構造とロジックの分離**：`Node`クラスはツリー構造やPSIデータの保持に特化させ、計算ロジック（`calcPS2I4demand`など）は`PlanningEngine`や別のユーティリティモジュールに移す。
+
+例：
+```python
+# planning_engine.py
+class PlanningEngine:
+    def __init__(self, root_node):
+        self.root_node = root_node
+
+    def demand_planning(self):
+        calc_all_psi2i4demand(self.root_node)
+        # 他の処理（評価、描画指示など）はここで調整
+
+# gui/app.py
+class PSIPlannerApp:
+    def __init__(self, root, config):
+        self.root = root
+        self.config = config
+        self.engine = PlanningEngine(root_node_outbound)  # エンジンを初期化
+
+    def run_demand_planning(self):
+        self.engine.demand_planning()  # エンジンに処理を委譲
+        self.update_gui()  # GUI更新
+
+# tree.py
+class Node:
+    def __init__(self, name: str):
+        self.name = name
+        self.children = []
+        self.psi4demand = None  # データ保持のみ
+```
+
+このようにすることで：
+- `PSIPlannerApp`はGUIの管理に集中。
+- `PlanningEngine`は計画ロジックの実行に集中。
+- `Node`はデータ構造の保持に集中。
+- `self`が指すインスタンスのコンテキストが明確になり、混乱が減る。
+
+##### (2) 再帰処理の整理
+- 現在の`calc_all_psi2i4demand`は外部関数として定義されていますが、`Node`クラスに密接に関連しているため、クラスメソッドとして実装するか、`PlanningEngine`に移動するかを検討します。
+- 再帰処理をクラスメソッドとして実装する場合、以下のようにできます：
+
+```python
+# tree.py
+class Node:
+    def calc_psi2i4demand(self):
+        plan_len = 53 * self.plan_range
+        for w in range(1, plan_len):
+            s = self.psi4demand[w][0]
+            co = self.psi4demand[w][1]
+            i0 = self.psi4demand[w - 1][2]
+            p = self.psi4demand[w][3]
+            i1 = i0 + p - s  # 簡略化した計算例
+            self.psi4demand[w][2] = i1
+
+    def apply_psi2i4demand(self):
+        self.calc_psi2i4demand()
+        for child in self.children:
+            child.apply_psi2i4demand()
+```
+
+- これにより、`calc_all_psi2i4demand`のような外部関数を排除し、ツリーのトラバーサルを`Node`クラス内で完結させることができます。
+
+##### (3) 名前空間の整理
+- `self`の混乱を防ぐため、変数名やメソッド名をより明確にする。例えば、`self.root_node_outbound`を`self.outbound_root`に変更するなど、役割が一目でわかる名前にする。
+- また、`psi4demand`のような名前は、PSI（Plan, Supply, Inventory）のどの部分を指すのか不明確なので、`demand_psi`や`supply_psi`のように役割を明示する名前に変更する。
+
+---
+
+### 2. クラスメソッド vs 外部関数の選択
+
+#### 問題の整理
+- 同じ機能（例：`calcPS2I4demand`）をクラスメソッドとして実装するか、外部関数として実装するかで迷っている。
+- Pythonの仕様上、メモリ消費や処理速度にどのような影響があるのか知りたい。
+
+#### クラスメソッドと外部関数の比較
+以下に、両者の違いをPythonの仕様に基づいて比較します：
+
+##### (1) クラスメソッド
+- **メリット**：
+  - クラスに密接に関連するロジックをカプセル化できる（オブジェクト指向の原則に適合）。
+  - `self`を通じてインスタンスの状態（例：`self.psi4demand`）に直接アクセス可能。
+  - コードのコンテキストが明確（どのクラスに属するかが一目瞭然）。
+- **デメリット**：
+  - インスタンスを渡す必要がある（例：`node.calcPS2I4demand()`）。
+  - クラスに依存するため、汎用性が低い（他のクラスやコンテキストで再利用しにくい）。
+- **メモリと速度**：
+  - メソッドはクラス定義の一部として保存されるが、インスタンスごとにメソッドのコピーは作成されない（クラスレベルで共有）。
+  - 呼び出し時に`self`を渡すオーバーヘッドがあるが、Pythonの通常のユースケースでは無視できるレベル。
+
+##### (2) 外部関数
+- **メリット**：
+  - 汎用性が高い（どのクラスにも依存せず、任意のオブジェクトに適用可能）。
+  - モジュール化しやすい（ユーティリティモジュールにまとめて再利用可能）。
+  - シンプルな処理では記述量が少ない。
+- **デメリット**：
+  - 状態を直接操作できないため、引数でデータを明示的に渡す必要がある（例：`calc_all_psi2i4demand(node)`）。
+  - コードのコンテキストが不明確になりやすい（どのクラスやデータ構造に依存するのかわかりにくい）。
+- **メモリと速度**：
+  - 関数はモジュールレベルで定義され、インスタンスに依存しないため、メモリ消費はほぼ同等。
+  - 呼び出し時のオーバーヘッドはクラスメソッドとほぼ同じ（Pythonの関数呼び出しコストは低い）。
+
+##### Pythonの仕様に基づく影響
+- **メモリ消費**：クラスメソッドも外部関数も、Pythonのオブジェクトモデルでは大きな差はない。どちらもコードオブジェクトとしてメモリに保存され、呼び出し時に動的に解決される。インスタンス変数（例：`self.psi4demand`）のメモリ消費は、どちらを選んでも変わらない。
+- **処理速度**：クラスメソッドの`self`解決やメソッドディスパッチのオーバーヘッドは微小（ナノ秒オーダー）。外部関数の引数渡しも同様に軽量。7,000ステップのコードベースでは、他の要因（例：ループの効率、データ構造の選択）が速度に大きく影響する。
+- **メンテナンス性**：クラスメソッドは関連するデータとロジックをまとめるため、大規模プロジェクトでは可読性と保守性が向上する。外部関数はユーティリティ関数として適切だが、状態管理が分散しやすく、バグの原因になり得る。
+
+#### 推奨
+以下のガイドラインで実装方法を選ぶことをお勧めします：
+- **クラスメソッドを選ぶ場合**：
+  - ロジックが特定のクラス（例：`Node`）の状態に強く依存する場合。
+  - オブジェクト指向の設計を重視し、データと振る舞いをカプセル化したい場合。
+  - 例：`Node.calc_psi2i4demand`は`Node`の`psi4demand`を直接操作するため、クラスメソッドが自然。
+- **外部関数を選ぶ場合**：
+  - ロジックが汎用的で、複数のクラスやコンテキストで再利用可能な場合。
+  - 状態を変更せず、純粋な計算や変換を行う場合。
+  - 例：`calc_all_psi2i4demand`はツリーのトラバーサルを汎用的に行うなら、ユーティリティ関数として実装可能。
+
+具体例：
+```python
+# utils.py（外部関数として実装）
+def traverse_and_calc_psi(node):
+    node.calc_psi2i4demand()
+    for child in node.children:
+        traverse_and_calc_psi(child)
+
+# tree.py（クラスメソッドとして実装）
+class Node:
+    def calc_psi2i4demand(self):
+        # 既存のロジック
+        plan_len = 53 * self.plan_range
+        for w in range(1, plan_len):
+            # ...
+```
+
+この場合、トラバーサルロジックは`utils.py`の外部関数として分離し、個々のノードの計算は`Node`のクラスメソッドとして保持する方が、役割が明確で再利用性が高いです。
+
+---
+
+### 3. リファクタリングの方向性
+
+#### 全体の目標
+- **見通しの良さ**：コードの役割を明確にし、関数やクラスの責任を単一化。
+- **再利用性**：ロジックをモジュール化し、他のプロジェクトや機能で使いやすくする。
+- **保守性**：コメントやドキュメントを充実させ、デバッグを容易にする。
+
+#### 具体的なリファクタリング案
+1. **モジュール分割**：
+   - 現在のコードを以下のように分割する：
+     - `gui/`：GUI関連（`app.py`）
+     - `engine/`：計画ロジック（`planning_engine.py`）
+     - `model/`：データ構造（`tree.py`）
+     - `utils/`：汎用ユーティリティ（`utils.py`）
+   - 例：
+     ```
+     project/
+     ├── gui/
+     │   └── app.py
+     ├── engine/
+     │   └── planning_engine.py
+     ├── model/
+     │   └── tree.py
+     ├── utils/
+     │   └── utils.py
+     └── main.py
+     ```
+
+2. **依存関係の整理**：
+   - `PSIPlannerApp`が`Node`や計画ロジックに直接依存しないように、`PlanningEngine`を仲介者として使用。
+   - 依存注入（Dependency Injection）を利用して、設定やデータを明示的に渡す。
+
+3. **命名規則の統一**：
+   - 関数名や変数名をPEP 8に準拠させる（例：`calcPS2I4demand` → `calc_psi_to_inventory_for_demand`）。
+   - PSIの役割（Plan, Supply, Inventory）を明確にする命名を採用。
+
+4. **コメントとドキュメントの充実**：
+   - 各関数やメソッドにDocstringを追加。
+   - 例：
+     ```python
+     def calc_psi2i4demand(self):
+         """
+         Calculate PSI (Plan, Supply, Inventory) for demand planning.
+         Updates self.psi4demand based on forward planning logic.
+         """
+         plan_len = 53 * self.plan_range
+         # ...
+     ```
+
+5. **パフォーマンス最適化**：
+   - リスト操作（例：`diff_list = [x for x in work if x not in s]`）は、データ量が多い場合に非効率。セット操作（`set(work) - set(s)`）やNumPyを使用する。
+   - 例：
+     ```python
+     import numpy as np
+
+     def calc_psi2i4demand(self):
+         plan_len = 53 * self.plan_range
+         psi = np.array(self.psi4demand)
+         for w in range(1, plan_len):
+             s, co, i0, p = psi[w, 0], psi[w, 1], psi[w-1, 2], psi[w, 3]
+             psi[w, 2] = i0 + p - s
+         self.psi4demand = psi.tolist()
+     ```
+
+6. **テストの導入**：
+   - ロジックごとに単体テストを書き、リファクタリング後も動作が保証されるようにする。
+   - 例：`unittest`や`pytest`を使用して、`calc_psi2i4demand`の結果を検証。
+
+---
+
+### 具体的な次のステップ
+1. **コードの提示**：
+   - `app.py`と`tree.py`の全体像や、`demand_planning`に関連する部分を共有していただければ、より具体的なリファクタリング案を提案できます。
+   - 特に、`self.psi4demand`のデータ構造（リストの形状や内容）が不明なため、詳細がわかると最適化案を提案しやすくなります。
+
+2. **優先順位の確認**：
+   - 可読性の向上、メモリ効率、処理速度のどれを最優先にするか教えていただければ、重点的にアドバイスします。
+   - 例：GUIのレスポンス速度を重視するなら、非同期処理（`asyncio`や`threading`）の導入も検討可能。
+
+3. **試作用コードの提供**：
+   - 小さなプロトタイプ（例：`Node`クラスと`PlanningEngine`クラスのサンプル）を作成し、動作確認しながらリファクタリングを進めることをお勧めします。
+
+---
+
+### まとめ
+- **`self`の混乱**：GUI、ロジック、データ構造を分離し、クラスの責任を明確化。`PlanningEngine`クラスの導入で役割を整理。
+- **クラスメソッド vs 外部関数**：状態に依存するロジックはクラスメソッド、汎用的な処理は外部関数。メモリや速度の差は小さいが、可読性と保守性を優先。
+- **リファクタリング**：モジュール分割、命名統一、コメント充実、NumPy活用で効率化。
+
+必要であれば、具体的なコードを共有いただくか、特定の部分（例：`calcPS2I4demand`の最適化）に焦点を絞った質問をいただければ、さらに詳細な支援が可能です！大杉様のプロジェクトの成功を心より応援しております！
+
+
+
+
+- Inbound_DmBw(self):
+- Inbound_SpFw(self):
+- canvas_psi(self):
+- cashflow_out_in_net(self):
+
+- demand_leveling(self):
+- demand_planning(self):
+- eval_buffer_stock(self):
+
+- inbound_lot_by_lot_to_csv(self):
+- inbound_psi_to_csv(self):
+- load_data_files(self):
+- load_from_directory(self):
+- lot_cost_structure_to_csv(self):
+
+- on_exit(self):
+
+- optimize_network(self):
+
+- outbound_lot_by_lot_to_csv(self):
+- outbound_psi_to_csv(self):
+- psi_for_excel(self):
+- psi_price4cf(self):
+- save_to_directory(self):
+- scrollbar(self):
+- show_3d_overview(self):
+- show_cost_stracture_bar_graph(self):
+- show_month_data_csv(self):
+- show_revenue_profit(self):
+
+- supply_planning(self):
+- supplychain_performance_to_csv(self):
+
+
+# PySI Planning Engines
+
+# 初期値を設定 先行生産の週数
+        self.pre_proc_LT_entry.insert(0, str(self.config.DEFAULT_PRE_PROC_LT))  
+# outbound
+self.demand_planning   
+self.demand_leveling   
+self.supply_planning   
+
+self.eval_buffer_stock 
+self.optimize_network  
+
+# inbound
+self.Inbound_DmBw      
+self.Inbound_SpFw      
+
+
+
+# Planning Engine
+
+    def demand_planning(self):
+        # Implement forward planning logic here
+        print("Forward planning executed.")
+
+        #@240903@241106
+        calc_all_psi2i4demand(self.root_node_outbound)
+
+        self.update_evaluation_results()
+
+        #@241212 add
+        self.decouple_node_selected = []
+        self.view_nx_matlib()
+
+        self.root.after(1000, self.show_psi("outbound", "demand"))
+
+
+
+# ****************************
+# PSI planning demand
+# ****************************
+def calc_all_psi2i4demand(node):
+
+    node.calcPS2I4demand()
+
+    for child in node.children:
+
+        calc_all_psi2i4demand(child)
+
+
+
+
+    # ******************************
+    # in or out    : root_node_outbound
+    # plan layer   : demand layer
+    # node order   : preorder # Leaf2Root
+    # time         : Foreward
+    # calculation  : PS2I
+    # ******************************
+
+    def calcPS2I4demand(self):
+
+        # psiS2P = self.psi4demand # copyせずに、直接さわる
+
+        plan_len = 53 * self.plan_range
+        # plan_len = len(self.psi4demand)
+
+        for w in range(1, plan_len):  # starting_I = 0 = w-1 / ending_I =plan_len
+            # for w in range(1,54): # starting_I = 0 = w-1 / ending_I = 53
+
+            s = self.psi4demand[w][0]
+            co = self.psi4demand[w][1]
+
+            i0 = self.psi4demand[w - 1][2]
+            i1 = self.psi4demand[w][2]
+
+            p = self.psi4demand[w][3]
+
+            # *********************
+            # # I(n-1)+P(n)-S(n)
+            # *********************
+
+            work = i0 + p  # 前週在庫と当週着荷分 availables
+
+            # ここで、期末の在庫、S出荷=売上を操作している
+            # S出荷=売上を明示的にlogにして、売上として記録し、表示する処理
+            # 出荷されたS=売上、在庫I、未出荷COの集合を正しく表現する
+
+            # モノがお金に代わる瞬間 #@240909コこではなくてS実績
+
+            diff_list = [x for x in work if x not in s]  # I(n-1)+P(n)-S(n)
+
+            self.psi4demand[w][2] = i1 = diff_list
+
+
+
+
+    # Demand Leveling logic here
+    def demand_leveling(self):
+        print("Demand Leveling executed.")
+
+
+        # *********************************
+        # Demand LEVELing on shipping yard / with pre_production week
+        # *********************************
+
+        year_st  = 2020
+        year_end = 2021
+
+        year_st  = self.plan_year_st
+        year_end = year_st + self.plan_range - 1
+
+        pre_prod_week = self.pre_proc_LT
+
+
+        # root_node_outboundのsupplyの"S"のみを平準化して生成している
+        demand_leveling_on_ship(self.root_node_outbound, pre_prod_week, year_st, year_end)
+
+
+        # root_node_outboundのsupplyの"PSI"を生成している
+        ##@241114 KEY CODE
+        self.root_node_outbound.calcS2P_4supply()  #mother plantのconfirm S=> P
+        self.root_node_outbound.calcPS2I4supply()  #mother plantのPS=>I
+
+
+        #@241114 KEY CODE
+        # ***************************************
+        # その3　都度のparent searchを実行 setPS_on_ship2node
+        # ***************************************
+        feedback_psi_lists(self.root_node_outbound, self.nodes_outbound)
+
+
+
+        self.update_evaluation_results()
+
+        # PSI計画の初期状態をバックアップ
+        self.psi_backup_to_file(self.root_node_outbound, 'psi_backup.pkl')
+
+        self.view_nx_matlib()
+
+        self.root.after(1000, self.show_psi("outbound", "supply"))
+
+
+
+    # +++++++++++++++++++++++++++++++++++++++++++++++
+    # Mother Plant demand leveling 
+    # +++++++++++++++++++++++++++++++++++++++++++++++
+def demand_leveling_on_ship(root_node_outbound, pre_prod_week, year_st, year_end):
+
+    # input: root_node_outbound.psi4demand
+    #        pre_prod_week =26 
+    #
+    # output:root_node_outbound.psi4supply
+
+    plan_range = root_node_outbound.plan_range
+
+
+    #@241114
+    # 需給バランスの問題は、ひとつ上のネットワーク全体のoptimizeで解く
+
+    # ロット単位で供給を変化させて、weight=ロット(CPU_profit)利益でsimulate
+    # 設備投資の回収期間を見る
+
+    # 供給>=需要ならオペレーション問題
+    # 供給<需要なら供給配分とオペレーション問題
+
+    # optimiseで、ルートと量を決定
+    # PSIで、operation revenue cost profitを算定 business 評価
+
+    # 業界No1/2/3の供給戦略をsimulateして、business評価する
+
+
+    # node_psi_dict_Ot4Dmでは、末端市場のleafnodeのみセット
+    #
+    # root_nodeのS psi_list[w][0]に、levelingされた確定出荷S_confirm_listをセッ    ト
+
+    # 年間の総需要(総lots)をN週先行で生産する。
+    # 例えば、３ヶ月先行は13週先行生産として、年間総需要を週平均にする。
+
+    # S出荷で平準化して、confirmedS-I-P
+    # conf_Sからconf_Pを生成して、conf_P-S-I  PUSH and PULL
+
+    S_list = []
+    S_allocated = []
+
+    year_lots_list = []
+    year_week_list = []
+
+    leveling_S_in = []
+
+    leveling_S_in = root_node_outbound.psi4demand
+
+    # psi_listからS_listを生成する
+    for psi in leveling_S_in:
+
+        S_list.append(psi[0])
+
+    # 開始年を取得する
+    plan_year_st = year_st  # 開始年のセット in main()要修正
+
+    for yyyy in range(plan_year_st, plan_year_st + plan_range + 1):
+
+        year_lots = count_lots_yyyy(S_list, str(yyyy))
+
+        year_lots_list.append(year_lots)
+
+    #        # 結果を出力
+    #       #print(yyyy, " year carrying lots:", year_lots)
+    #
+    #    # 結果を出力
+    #   #print(" year_lots_list:", year_lots_list)
+
+    # an image of sample data
+    #
+    # 2023  year carrying lots: 0
+    # 2024  year carrying lots: 2919
+    # 2025  year carrying lots: 2914
+    # 2026  year carrying lots: 2986
+    # 2027  year carrying lots: 2942
+    # 2028  year carrying lots: 2913
+    # 2029  year carrying lots: 0
+    #
+    # year_lots_list: [0, 2919, 2914, 2986, 2942, 2913, 0]
+
+    year_list = []
+
+    for yyyy in range(plan_year_st, plan_year_st + plan_range + 1):
+
+        year_list.append(yyyy)
+
+        # テスト用の年を指定
+        year_to_check = yyyy
+
+        # 指定された年のISO週数を取得
+        week_count = is_52_or_53_week_year(year_to_check)
+
+        year_week_list.append(week_count)
+
+    #        # 結果を出力
+    #       #print(year_to_check, " year has week_count:", week_count)
+    #
+    #    # 結果を出力
+    #   #print(" year_week_list:", year_week_list)
+
+    # print("year_list", year_list)
+
+    # an image of sample data
+    #
+    # 2023  year has week_count: 52
+    # 2024  year has week_count: 52
+    # 2025  year has week_count: 52
+    # 2026  year has week_count: 53
+    # 2027  year has week_count: 52
+    # 2028  year has week_count: 52
+    # 2029  year has week_count: 52
+    # year_week_list: [52, 52, 52, 53, 52, 52, 52]
+
+
+    # *****************************
+    # 生産平準化のための年間の週平均生産量(ロット数単位)
+    # *****************************
+
+    # *****************************
+    # make_year_average_lots
+    # *****************************
+    # year_list     = [2023,2024,2025,2026,2027,2028,2029]
+
+    # year_lots_list = [0, 2919, 2914, 2986, 2942, 2913, 0]
+    # year_week_list = [52, 52, 52, 53, 52, 52, 52]
+
+    year_average_lots_list = []
+
+    for lots, weeks in zip(year_lots_list, year_week_list):
+
+        average_lots_per_week = math.ceil(lots / weeks)
+
+        year_average_lots_list.append(average_lots_per_week)
+
+
+    # print("year_average_lots_list", year_average_lots_list)
+    #
+    # an image of sample data
+    #
+    # year_average_lots_list [0, 57, 57, 57, 57, 57, 0]
+
+    # 年間の総需要(総lots)をN週先行で生産する。
+    # 例えば、３ヶ月先行は13週先行生産として、年間総需要を週平均にする。
+
+    #
+    # 入力データの前提
+    #
+    # leveling_S_in[w][0] == S_listは、outboundのdemand_planで、
+    # マザープラントの出荷ポジションのSで、
+    # 5年分 週次 最終市場におけるlot_idリストが
+    # LT offsetされた状態で入っている
+    #
+    # year_list     = [2023,2024,2025,2026,2027,2028,2029]
+
+    # year_lots_list = [0, 2919, 2914, 2986, 2942, 2913, 0]
+    # year_week_list = [52, 52, 52, 53, 52, 52, 52]
+    # year_average_lots_list [0, 57, 57, 57, 57, 57, 0]
+
+    # ********************************
+    # 先行生産の週数
+    # ********************************
+    # precedence_production_week =13
+
+    pre_prod_week =26 # 26週=6か月の先行生産をセット
+    # pre_prod_week =13 # 13週=3か月の先行生産をセット
+    # pre_prod_week = 6  # 6週=1.5か月の先行生産をセット
+
+    # ********************************
+    # 先行生産の開始週を求める
+    # ********************************
+    # 市場投入の前年において i= 0  year_list[i]           # 2023
+    # 市場投入の前年のISO週の数 year_week_list[i]         # 52
+
+    # 先行生産の開始週は、市場投入の前年のISO週の数 - 先行生産週
+
+    pre_prod_start_week = 0
+
+    i = 0
+
+    pre_prod_start_week = year_week_list[i] - pre_prod_week
+
+    # スタート週の前週まで、[]リストで埋めておく
+    for i in range(pre_prod_start_week):
+        S_allocated.append([])
+
+    # ********************************
+    # 最終市場からのLT offsetされた出荷要求lot_idリストを
+    # Allocate demand to mother plant weekly slots
+    # ********************************
+
+    # S_listの週別lot_idリストを一直線のlot_idリストに変換する
+    # mother plant weekly slots
+
+    # 空リストを無視して、一直線のlot_idリストに変換
+
+    # 空リストを除外して一つのリストに結合する処理
+    S_one_list = [item for sublist in S_list if sublist for item in sublist]
+
+    ## 結果表示
+    ##print(S_one_list)
+
+    # to be defined 毎年の定数でのlot_idの切り出し
+
+    # listBの各要素で指定された数だけlistAから要素を切り出して
+    # 新しいリストlistCを作成
+
+    listA = S_one_list  # 5年分のlot_idリスト
+
+    listB = year_lots_list  # 毎年毎の総ロット数
+
+    listC = []  # 毎年のlot_idリスト
+
+    start_idx = 0
+
+    for i, num in enumerate(listB):
+
+        end_idx = start_idx + num
+
+        # original sample
+        # listC.append(listA[start_idx:end_idx])
+
+        # **********************************
+        # "slice" and "allocate" at once
+        # **********************************
+        sliced_lots = listA[start_idx:end_idx]
+
+        # 毎週の生産枠は、year_average_lots_listの平均値を取得する。
+        N = year_average_lots_list[i]
+
+        if N == 0:
+
+            pass
+
+        else:
+
+            # その年の週次の出荷予定数が生成される。
+            S_alloc_a_year = [
+                sliced_lots[j : j + N] for j in range(0, len(sliced_lots), N)
+            ]
+
+            S_allocated.extend(S_alloc_a_year)
+            # S_allocated.append(S_alloc_a_year)
+
+        start_idx = end_idx
+
+    ## 結果表示
+    # print("S_allocated", S_allocated)
+
+    # set psi on outbound supply
+
+    # "JPN-OUT"
+    #
+
+
+    # ***********************************************
+    #@241113 CHANGE root_node_outbound.psi4supplyが存在するという前提
+    # ***********************************************
+    #
+    #node_name = root_node_outbound.name  # Nodeからnode_nameを取出す
+    #
+    ## for w, pSi in enumerate( S_allocated ):
+    ##
+    ##    node_psi_dict_Ot4Sp[node_name][w][0] = pSi
+    
+    for w in range(53 * plan_range):
+
+        if w <= len(S_allocated) - 1:  # index=0 start
+
+            root_node_outbound.psi4supply[w][0] = S_allocated[w]
+            #node_psi_dict_Ot4Sp[node_name][w][0] = S_allocated[w]
+
+        else:
+
+            root_node_outbound.psi4supply[w][0] = []
+            #node_psi_dict_Ot4Sp[node_name][w][0] = []
+
+    # +++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+
+
+
+
+
+
+
+
+    def supply_planning(self):
+        # Check if the necessary data is loaded
+        if self.root_node_outbound is None or self.nodes_outbound is None:
+            print("Error: PSI Plan data is not loaded. Please load the data first.")
+            tk.messagebox.showerror("Error", "PSI Plan data is NOT loaded. please File Open parameter directory first.")
+            return
+    
+        # Implement forward planning logic here
+        print("Supply planning with Decoupling points")
+    
+        # Restore PSI data from a backup file
+        self.root_node_outbound = self.psi_restore_from_file('psi_backup.pkl')
+    
+        if self.decouple_node_selected == []:
+            # Search nodes_decouple_all[-2], that is "DAD" nodes
+            nodes_decouple_all = make_nodes_decouple_all(self.root_node_outbound    )
+            print("nodes_decouple_all", nodes_decouple_all)
+    
+            # [-2] will be "DAD" node, the point of Delivery and Distribution
+            decouple_node_names = nodes_decouple_all[-2]
+        else:
+            decouple_node_names = self.decouple_node_selected
+    
+        # Perform supply planning logic
+        push_pull_all_psi2i_decouple4supply5(
+            self.root_node_outbound, decouple_node_names
+        )
+    
+        # Evaluate the results
+        self.update_evaluation_results()
+    
+    
+        #@250218 STOP
+        ## Cash OUT/IN
+        #self.cash_flow_print()
+    
+    
+    
+        # Update the network visualization
+        self.decouple_node_selected = decouple_node_names
+        self.view_nx_matlib4opt()
+    
+        # Update the PSI area
+        self.root.after(1000, self.show_psi("outbound", "supply"))
+    
+    
+# *****************************************************
+# following " self" is 
+# *****************************************************
+
+
+
+
+    def calcPS2I4supply(self): # this "self" is an instance of class "Node"
+
+        # psiS2P = self.psi4demand # copyせずに、直接さわる
+
+        plan_len = 53 * self.plan_range
+        # plan_len = len(self.psi4supply)
+
+        for w in range(1, plan_len):  # starting_I = 0 = w-1 / ending_I =plan_len
+            # for w in range(1,54): # starting_I = 0 = w-1 / ending_I = 53
+
+            s = self.psi4supply[w][0]
+            co = self.psi4supply[w][1]
+
+            i0 = self.psi4supply[w - 1][2]
+            i1 = self.psi4supply[w][2]
+
+            p = self.psi4supply[w][3]
+
+            # *********************
+            # # I(n-1)+P(n)-S(n)
+            # *********************
+
+            work = i0 + p  # 前週在庫と当週着荷分 availables
+
+            # memo ここで、期末の在庫、S出荷=売上を操作している
+            # S出荷=売上を明示的にlogにして、売上として記録し、表示する処理
+            # 出荷されたS=売上、在庫I、未出荷COの集合を正しく表現する
+
+            # モノがお金に代わる瞬間
+
+            diff_list = [x for x in work if x not in s]  # I(n-1)+P(n)-S(n)
+
+            self.psi4supply[w][2] = i1 = diff_list
+
+            # ************************************
+            # probare a lot checking process
+            # ************************************
+            
+            if self.name == "MUC_N":
+
+                if w in [53,54,55,56,57]:
+
+                    print("s, co, i0, i1, p ", w )
+                    print("s" , w, s )
+                    print("co", w, co)
+                    print("i0", w, i0)
+                    print("i1", w, i1)
+                    print("p" , w, p )
+
+
+
+
+def PUSH_process(node):
+
+
+    # ***************
+    # decoupl nodeに入って最初にcalcPS2Iで状態を整える
+    # ***************
+    node.calcPS2I4supply()  # calc_psi with PULL_S
+
+
+    print(f"PUSH_process applied to {node.name}")
+
+
+
+
+def push_pull_all_psi2i_decouple4supply5(node, decouple_nodes):
+
+    if node.name in decouple_nodes:
+
+        # ***************
+        # decoupl nodeに入って最初にcalcPS2Iで状態を整える
+        # ***************
+        node.calcPS2I4supply()  # calc_psi with PULL_S
+
+
+        #@241002 decoupling nodeのみpullSで確定ship
+        # *******************************************
+        # decouple nodeは、pull_Sで出荷指示する
+        # *******************************************
+        copy_S_demand2supply(node)
+
+        PUSH_process(node)         # supply SP2Iしてからの
+
+        apply_pull_process(node)   # demandSに切り替え
+
+    else:
+
+        PUSH_process(node)
+
+        for child in node.children:
+
+            push_pull_all_psi2i_decouple4supply5(child, decouple_nodes)
+
+

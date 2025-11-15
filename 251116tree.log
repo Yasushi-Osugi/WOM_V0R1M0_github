@@ -1,0 +1,627 @@
+フォルダー パスの一覧:  ボリューム OS
+ボリューム シリアル番号は AEED-9289 です
+C:.
+│  251116tree.log
+│  main.py
+│  README
+│  
+├─data
+│      node_geo.csv
+│      node_geo4export.csv
+│      node_geo4import.csv
+│      node_geo4import_WORK.csv
+│      node_geo_BK.csv
+│      node_geo_BK250911.csv
+│      node_geo_WORK.xlsx
+│      offering_price_ASIS_TOBE.csv
+│      product_tree_inbound.csv
+│      product_tree_outbound.csv
+│      pysi.sqlite3
+│      sku_cost_table_inbound.csv
+│      sku_cost_table_outbound.csv
+│      sku_P_month_data.csv
+│      sku_S_month_data.csv
+│      S_month_data.csv
+│      tariff_table.csv
+│      
+├─docs
+│  │  SEED_PROMPT.md
+│  │  
+│  └─work
+│          SEED_PROMPT_250902.md
+│          
+├─examples
+│  └─scenarios
+│      └─edu_csv
+│              251014デコレータを使わない話.txt
+│              demand.csv
+│              edges.csv
+│              nodes.csv
+│              products.csv
+│              
+├─out
+│      kpi.csv
+│      kpi.txt
+│      series.csv
+│      
+├─out_csv_demand20
+│      kpi.csv
+│      kpi.txt
+│      psi_df.csv
+│      series.csv
+│      
+├─out_csv_smoke
+│      kpi.csv
+│      kpi.txt
+│      psi_df.csv
+│      series.csv
+│      
+├─out_test
+│      kpi.csv
+│      kpi.txt
+│      series.csv
+│      
+├─out_test2
+│      kpi.csv
+│      kpi.txt
+│      series.csv
+│      
+├─out_test3
+│      kpi.csv
+│      kpi.txt
+│      psi_df.csv
+│      series.csv
+│      
+├─pysi
+│  │  check_scenario.py
+│  │  export_node_geo.py
+│  │  import_node_geo.py
+│  │  sql_geo_check.py
+│  │  __init__.py
+│  │  
+│  ├─app
+│  │  │  entry_csv.py
+│  │  │  entry_gui.py
+│  │  │  entry_sql.py
+│  │  │  entry_sql_BK_temp.py
+│  │  │  headless_run.py
+│  │  │  narative_starter.txt
+│  │  │  narrative_compiler.py
+│  │  │  orchestrator.py
+│  │  │  run_once.py
+│  │  │  scenario_runner.py
+│  │  │  Untitled-2.py
+│  │  │  
+│  │  └─__pycache__
+│  │          entry_csv.cpython-312.pyc
+│  │          orchestrator.cpython-312.pyc
+│  │          run_once.cpython-312.pyc
+│  │          
+│  ├─core
+│  │  │  pipeline.py
+│  │  │  pipeline_BK251014_1809.py
+│  │  │  pipeline_BK251019_2104.py
+│  │  │  plugin_loader.py
+│  │  │  plugin_loader_BK251014.py
+│  │  │  __init__.py
+│  │  │  
+│  │  ├─hooks
+│  │  │  │  core.py
+│  │  │  │  __init__.py
+│  │  │  │  
+│  │  │  └─__pycache__
+│  │  │          core.cpython-312.pyc
+│  │  │          __init__.cpython-312.pyc
+│  │  │          
+│  │  └─__pycache__
+│  │          pipeline.cpython-312.pyc
+│  │          plugin_loader.cpython-312.pyc
+│  │          __init__.cpython-312.pyc
+│  │          
+│  ├─db
+│  │  │  add_columns_to_node_product.sql
+│  │  │  add_node_geo.py
+│  │  │  add_product_edge.py
+│  │  │  apply_schema.py
+│  │  │  backfill_product_edge.py
+│  │  │  calendar_iso.py
+│  │  │  calendar_iso_generate.py
+│  │  │  calendar_iso_test.py
+│  │  │  calendar_sync.py
+│  │  │  db_check.py
+│  │  │  db_check2.py
+│  │  │  quick_db_check.py
+│  │  │  schema.sql
+│  │  │  schema4new_250920.sql
+│  │  │  schema_core_only.sql
+│  │  │  schema_memo.txt
+│  │  │  schema_psi_v1.sql
+│  │  │  seed_node_geo_from_csv.py
+│  │  │  seed_node_geo_from_csv_BK.py
+│  │  │  seed_product_edge_from_csv.py
+│  │  │  sqlite.py
+│  │  │  sqlite_bridge.py
+│  │  │  sync_sqlite.py
+│  │  │  verify_geo_in_db.py
+│  │  │  __init__.py
+│  │  │  
+│  │  └─__pycache__
+│  │          apply_schema.cpython-312.pyc
+│  │          calendar_iso.cpython-312.pyc
+│  │          calendar_sync.cpython-312.pyc
+│  │          __init__.cpython-312.pyc
+│  │          
+│  ├─etl
+│  │  │  etl_monthly_to_lots.py
+│  │  │  __init__.py
+│  │  │  
+│  │  └─__pycache__
+│  │          etl_monthly_to_lots.cpython-312.pyc
+│  │          __init__.cpython-312.pyc
+│  │          
+│  ├─evaluate
+│  │  │  cost_attach.py
+│  │  │  cost_df_loader.py
+│  │  │  cost_df_loader__build_cost_df_from_sql.py
+│  │  │  evaluate_cost_models_v2.py
+│  │  │  offering_price.py
+│  │  │  pmpl_propagate.py
+│  │  │  __init__.py
+│  │  │  
+│  │  └─__pycache__
+│  │          cost_attach.cpython-312.pyc
+│  │          cost_df_loader.cpython-312.pyc
+│  │          evaluate_cost_models_v2.cpython-312.pyc
+│  │          offering_price.cpython-312.pyc
+│  │          pmpl_propagate.cpython-312.pyc
+│  │          __init__.cpython-312.pyc
+│  │          
+│  ├─gui
+│  │  │  app.py
+│  │  │  app_BK250109_1337.py
+│  │  │  app_BK250109_1429.py
+│  │  │  app_FastNetworkViewer.py
+│  │  │  app_NetworkGraphApp.py
+│  │  │  collect_psi_data.py
+│  │  │  demo_plot_weekly.py
+│  │  │  engine_api.py
+│  │  │  lotbucket_adapter.py
+│  │  │  psi_adapter.py
+│  │  │  __init__.py
+│  │  │  
+│  │  └─__pycache__
+│  │          app.cpython-312.pyc
+│  │          app_FastNetworkViewer.cpython-312.pyc
+│  │          __init__.cpython-312.pyc
+│  │          
+│  ├─io
+│  │  │  psi_io_adapters.py
+│  │  │  sql_bridge.py
+│  │  │  sql_planenv.py
+│  │  │  tree_writeback.py
+│  │  │  __init__.py
+│  │  │  
+│  │  └─__pycache__
+│  │          psi_io_adapters.cpython-312.pyc
+│  │          sql_planenv.cpython-312.pyc
+│  │          tree_writeback.cpython-312.pyc
+│  │          __init__.cpython-312.pyc
+│  │          
+│  ├─io_adapters
+│  │  │  csv.py
+│  │  │  csv_1.py
+│  │  │  csv_adapter.py
+│  │  │  sql.py
+│  │  │  sql_adapter.py
+│  │  │  
+│  │  └─__pycache__
+│  │          csv.cpython-312.pyc
+│  │          csv_adapter.cpython-312.pyc
+│  │          sql.cpython-312.pyc
+│  │          sql_adapter.cpython-312.pyc
+│  │          
+│  ├─network
+│  │  │  factory.py
+│  │  │  network_factory.py
+│  │  │  node_base.py
+│  │  │  psi.txt
+│  │  │  tree.py
+│  │  │  
+│  │  └─__pycache__
+│  │          node_base.cpython-312.pyc
+│  │          tree.cpython-312.pyc
+│  │          
+│  ├─plan
+│  │  │  demand_generate.py
+│  │  │  engines.py
+│  │  │  engine_hardening.py
+│  │  │  lot_validators.py
+│  │  │  operations.py
+│  │  │  validators.py
+│  │  │  validators_OLD_lot_ID.py
+│  │  │  
+│  │  └─__pycache__
+│  │          demand_generate.cpython-312.pyc
+│  │          engines.cpython-312.pyc
+│  │          operations.cpython-312.pyc
+│  │          validators.cpython-312.pyc
+│  │          
+│  ├─plugins
+│  │  │  diagnostics.py
+│  │  │  sample_price_tweak.ini
+│  │  │  __init__.py
+│  │  │  
+│  │  ├─alloc_urgency
+│  │  │  │  plugin.ini
+│  │  │  │  __init__.py
+│  │  │  │  
+│  │  │  └─__pycache__
+│  │  │          __init__.cpython-312.pyc
+│  │  │          
+│  │  ├─capacity_clip
+│  │  │  │  plugin.py
+│  │  │  │  plugin_251020_SHIP_OK.py
+│  │  │  │  plugin_BK251019.py
+│  │  │  │  plugin_BK251020_1123.py
+│  │  │  │  __init__.py
+│  │  │  │  
+│  │  │  └─__pycache__
+│  │  │          plugin.cpython-312.pyc
+│  │  │          __init__.cpython-312.pyc
+│  │  │          
+│  │  ├─diagnostics
+│  │  │  │  plugin.py
+│  │  │  │  __init__.py
+│  │  │  │  
+│  │  │  └─__pycache__
+│  │  │          plugin.cpython-312.pyc
+│  │  │          __init__.cpython-312.pyc
+│  │  │          
+│  │  ├─educ_pack
+│  │  │  │  plugin.py
+│  │  │  │  plugin_BK251014_1835.py
+│  │  │  │  __init__.py
+│  │  │  │  
+│  │  │  └─__pycache__
+│  │  │          plugin.cpython-312.pyc
+│  │  │          __init__.cpython-312.pyc
+│  │  │          
+│  │  ├─log_moves_csv
+│  │  │  │  plugin.py
+│  │  │  │  __init__.py
+│  │  │  │  
+│  │  │  └─__pycache__
+│  │  │          plugin.cpython-312.pyc
+│  │  │          __init__.cpython-312.pyc
+│  │  │          
+│  │  ├─psi_lot_glue
+│  │  │  │  plugin.py
+│  │  │  │  __init__.py
+│  │  │  │  
+│  │  │  └─__pycache__
+│  │  │          plugin.cpython-312.pyc
+│  │  │          __init__.cpython-312.pyc
+│  │  │          
+│  │  ├─tickets_basic
+│  │  │  │  plugin.off.py
+│  │  │  │  __init__.py
+│  │  │  │  
+│  │  │  └─__pycache__
+│  │  │          plugin.cpython-312.pyc
+│  │  │          __init__.cpython-312.pyc
+│  │  │          
+│  │  ├─tickets_simple
+│  │  │  │  plugin.off.py
+│  │  │  │  __init__.py
+│  │  │  │  
+│  │  │  └─__pycache__
+│  │  │          plugin.cpython-312.pyc
+│  │  │          __init__.cpython-312.pyc
+│  │  │          
+│  │  ├─urgency_tickets
+│  │  │  │  plugin.py
+│  │  │  │  plugin_BK251020.py
+│  │  │  │  __init__.py
+│  │  │  │  
+│  │  │  └─__pycache__
+│  │  │          plugin.cpython-312.pyc
+│  │  │          __init__.cpython-312.pyc
+│  │  │          
+│  │  └─__pycache__
+│  │          diagnostics.cpython-312.pyc
+│  │          __init__.cpython-312.pyc
+│  │          
+│  ├─psi_planner_mvp
+│  │  │  250811kiriwake.py
+│  │  │  app.py
+│  │  │  csv_to_sqlite.py
+│  │  │  engine_api.py
+│  │  │  init_load_plan_data.py
+│  │  │  load_data_files.py
+│  │  │  load_plan_data_4_bridge.py
+│  │  │  models.py
+│  │  │  plan_env_main.py
+│  │  │  psi.db
+│  │  │  psi_adapter.py
+│  │  │  psi_runner.py
+│  │  │  README.md
+│  │  │  real_engine_bridge.py
+│  │  │  requirements.txt
+│  │  │  start_command.txt
+│  │  │  temp.py
+│  │  │  
+│  │  └─__pycache__
+│  │          plan_env_main.cpython-312.pyc
+│  │          
+│  ├─scenario
+│  │  │  store.py
+│  │  │  store_AS251005.py
+│  │  │  store_BK251006_1616.py
+│  │  │  
+│  │  └─__pycache__
+│  │          store.cpython-312.pyc
+│  │          
+│  ├─scripts
+│  │      add_perf_indexes.py
+│  │      calendar_iso_check.py
+│  │      check_lot_rows.py
+│  │      check_lot_size.py
+│  │      check_scenario.py
+│  │      check_tree_writeback.py
+│  │      db_optimize.py
+│  │      iso_calendar_sync_on_scenario.py
+│  │      psi_consistency_tests.py
+│  │      quick_pair_check.py
+│  │      quick_smoke_treewb.py
+│  │      update_lot_size.py
+│  │      upsert_cost_table2sql.py
+│  │      upsert_cost_table2sql_BK250929_2309.py
+│  │      upsert_cost_table2sql_BK250929_2330.py
+│  │      upsert_cost_table2sql_OLD.py
+│  │      upsert_inbound_cost_table2sql.py
+│  │      __init__.py
+│  │      
+│  ├─utils
+│  │  │  calendar445.py
+│  │  │  calendar445_origin.py
+│  │  │  config.py
+│  │  │  file_io.py
+│  │  │  PSI_planner_diagnostics.py
+│  │  │  SETUP_UI関数.txt
+│  │  │  util.py
+│  │  │  util_temp.py
+│  │  │  
+│  │  └─__pycache__
+│  │          calendar445.cpython-312.pyc
+│  │          config.cpython-312.pyc
+│  │          file_io.cpython-312.pyc
+│  │          util.cpython-312.pyc
+│  │          
+│  ├─view
+│  │      psi_db_view_test.py
+│  │      psi_db_view_test3.py
+│  │      
+│  └─__pycache__
+│          __init__.cpython-312.pyc
+│          
+├─pysi_BK251010_0930GOLDEN
+│  │  check_scenario.py
+│  │  export_node_geo.py
+│  │  import_node_geo.py
+│  │  PySI_V0R8_SQL_031_directory
+│  │  sql_geo_check.py
+│  │  __init__.py
+│  │  
+│  ├─app
+│  │  │  headless_run.py
+│  │  │  narative_starter.txt
+│  │  │  narrative_compiler.py
+│  │  │  orchestrator.py
+│  │  │  scenario_runner.py
+│  │  │  
+│  │  └─__pycache__
+│  │          orchestrator.cpython-312.pyc
+│  │          
+│  ├─db
+│  │  │  add_columns_to_node_product.sql
+│  │  │  add_node_geo.py
+│  │  │  add_product_edge.py
+│  │  │  apply_schema.py
+│  │  │  backfill_product_edge.py
+│  │  │  calendar_iso.py
+│  │  │  calendar_iso_generate.py
+│  │  │  calendar_iso_test.py
+│  │  │  calendar_sync.py
+│  │  │  db_check.py
+│  │  │  db_check2.py
+│  │  │  quick_db_check.py
+│  │  │  schema.sql
+│  │  │  schema4new_250920.sql
+│  │  │  schema_core_only.sql
+│  │  │  schema_memo.txt
+│  │  │  schema_psi_v1.sql
+│  │  │  seed_node_geo_from_csv.py
+│  │  │  seed_node_geo_from_csv_BK.py
+│  │  │  seed_product_edge_from_csv.py
+│  │  │  sqlite.py
+│  │  │  sqlite_bridge.py
+│  │  │  sync_sqlite.py
+│  │  │  verify_geo_in_db.py
+│  │  │  __init__.py
+│  │  │  
+│  │  └─__pycache__
+│  │          apply_schema.cpython-312.pyc
+│  │          calendar_iso.cpython-312.pyc
+│  │          calendar_sync.cpython-312.pyc
+│  │          __init__.cpython-312.pyc
+│  │          
+│  ├─etl
+│  │  │  etl_monthly_to_lots.py
+│  │  │  __init__.py
+│  │  │  
+│  │  └─__pycache__
+│  │          etl_monthly_to_lots.cpython-312.pyc
+│  │          __init__.cpython-312.pyc
+│  │          
+│  ├─evaluate
+│  │  │  cost_attach.py
+│  │  │  cost_df_loader.py
+│  │  │  cost_df_loader__build_cost_df_from_sql.py
+│  │  │  evaluate_cost_models_v2.py
+│  │  │  offering_price.py
+│  │  │  pmpl_propagate.py
+│  │  │  __init__.py
+│  │  │  
+│  │  └─__pycache__
+│  │          cost_attach.cpython-312.pyc
+│  │          cost_df_loader.cpython-312.pyc
+│  │          evaluate_cost_models_v2.cpython-312.pyc
+│  │          offering_price.cpython-312.pyc
+│  │          pmpl_propagate.cpython-312.pyc
+│  │          __init__.cpython-312.pyc
+│  │          
+│  ├─gui
+│  │  │  app.py
+│  │  │  app_BK250109_1337.py
+│  │  │  app_BK250109_1429.py
+│  │  │  app_FastNetworkViewer.py
+│  │  │  app_NetworkGraphApp.py
+│  │  │  collect_psi_data.py
+│  │  │  demo_plot_weekly.py
+│  │  │  engine_api.py
+│  │  │  lotbucket_adapter.py
+│  │  │  psi_adapter.py
+│  │  │  __init__.py
+│  │  │  
+│  │  └─__pycache__
+│  │          app.cpython-312.pyc
+│  │          app_FastNetworkViewer.cpython-312.pyc
+│  │          __init__.cpython-312.pyc
+│  │          
+│  ├─io
+│  │  │  psi_io_adapters.py
+│  │  │  sql_bridge.py
+│  │  │  sql_planenv.py
+│  │  │  tree_writeback.py
+│  │  │  __init__.py
+│  │  │  
+│  │  └─__pycache__
+│  │          psi_io_adapters.cpython-312.pyc
+│  │          sql_planenv.cpython-312.pyc
+│  │          tree_writeback.cpython-312.pyc
+│  │          __init__.cpython-312.pyc
+│  │          
+│  ├─network
+│  │  │  factory.py
+│  │  │  network_factory.py
+│  │  │  node_base.py
+│  │  │  psi.txt
+│  │  │  tree.py
+│  │  │  
+│  │  └─__pycache__
+│  │          node_base.cpython-312.pyc
+│  │          tree.cpython-312.pyc
+│  │          
+│  ├─plan
+│  │  │  demand_generate.py
+│  │  │  engines.py
+│  │  │  engine_hardening.py
+│  │  │  lot_validators.py
+│  │  │  operations.py
+│  │  │  validators.py
+│  │  │  validators_OLD_lot_ID.py
+│  │  │  
+│  │  └─__pycache__
+│  │          demand_generate.cpython-312.pyc
+│  │          engines.cpython-312.pyc
+│  │          operations.cpython-312.pyc
+│  │          validators.cpython-312.pyc
+│  │          
+│  ├─psi_planner_mvp
+│  │  │  250811kiriwake.py
+│  │  │  app.py
+│  │  │  csv_to_sqlite.py
+│  │  │  engine_api.py
+│  │  │  init_load_plan_data.py
+│  │  │  load_data_files.py
+│  │  │  load_plan_data_4_bridge.py
+│  │  │  models.py
+│  │  │  plan_env_main.py
+│  │  │  psi.db
+│  │  │  psi_adapter.py
+│  │  │  psi_runner.py
+│  │  │  README.md
+│  │  │  real_engine_bridge.py
+│  │  │  requirements.txt
+│  │  │  start_command.txt
+│  │  │  temp.py
+│  │  │  
+│  │  └─__pycache__
+│  │          plan_env_main.cpython-312.pyc
+│  │          
+│  ├─scenario
+│  │  │  store.py
+│  │  │  store_AS251005.py
+│  │  │  store_BK251006_1616.py
+│  │  │  
+│  │  └─__pycache__
+│  │          store.cpython-312.pyc
+│  │          
+│  ├─scripts
+│  │      add_perf_indexes.py
+│  │      calendar_iso_check.py
+│  │      check_lot_rows.py
+│  │      check_lot_size.py
+│  │      check_scenario.py
+│  │      check_tree_writeback.py
+│  │      db_optimize.py
+│  │      iso_calendar_sync_on_scenario.py
+│  │      psi_consistency_tests.py
+│  │      quick_pair_check.py
+│  │      quick_smoke_treewb.py
+│  │      update_lot_size.py
+│  │      upsert_cost_table2sql.py
+│  │      upsert_cost_table2sql_BK250929_2309.py
+│  │      upsert_cost_table2sql_BK250929_2330.py
+│  │      upsert_cost_table2sql_OLD.py
+│  │      upsert_inbound_cost_table2sql.py
+│  │      __init__.py
+│  │      
+│  ├─utils
+│  │  │  calendar445.py
+│  │  │  calendar445_origin.py
+│  │  │  config.py
+│  │  │  file_io.py
+│  │  │  PSI_planner_diagnostics.py
+│  │  │  SETUP_UI関数.txt
+│  │  │  
+│  │  └─__pycache__
+│  │          calendar445.cpython-312.pyc
+│  │          config.cpython-312.pyc
+│  │          file_io.cpython-312.pyc
+│  │          
+│  ├─view
+│  │      psi_db_view_test.py
+│  │      psi_db_view_test3.py
+│  │      
+│  └─__pycache__
+│          __init__.cpython-312.pyc
+│          
+├─tools
+│  │  check_scenario_columns.py
+│  │  check_scenario_schema.py
+│  │  migrate_add_label_note.py
+│  │  migrate_results_schema.py
+│  │  normalize_ws.py
+│  │  purge_defs.py
+│  │  purge_old_defs.py
+│  │  seed_scenario_tobe.py
+│  │  
+│  └─sql
+│          add_scenario_tables.sql
+│          
+└─var
+        psi.sqlite
+        psi_bk251006_0058.sqlite
+        psi_BK251006_1120.sqlite
+        

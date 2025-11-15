@@ -1,0 +1,135 @@
+# PSI_planner_diagnostics.py
+def check_lot_id_consistency(node):
+    """
+    Check if lot_ids are consistently used across PSI flows: P -> S -> I -> CO.
+    Parameters:
+        node (Node): A node object with psi4supply attribute.
+    Returns:
+        dict: Summary of inconsistencies found by week.
+    """
+    inconsistencies = {}
+    for w, week_data in enumerate(node.psi4supply):
+        if len(week_data) < 4:
+            continue  # skip incomplete entries
+        S, CO, I, P = week_data
+        # Convert all to set for comparison
+        S_set = set(S)
+        CO_set = set(CO)
+        I_set = set(I)
+        P_set = set(P)
+        # Start-of-week available = I(n-1) + P(n)
+        I_prev = set(node.psi4supply[w - 1][2]) if w > 0 else set()
+        available = I_prev.union(P_set)
+        # Consumed = S + CO
+        consumed = S_set.union(CO_set)
+        # Inconsistencies
+        missing_in_available = consumed - available
+        surplus_in_available = available - consumed - I_set  # unexpected remaining
+        if missing_in_available or surplus_in_available:
+            inconsistencies[w] = {
+                "missing_lot_ids": sorted(missing_in_available),
+                "surplus_lot_ids": sorted(surplus_in_available),
+            }
+    return inconsistencies
+# ***********************
+#
+#incons = check_lot_id_consistency(some_node)
+#
+#for w, detail in incons.items():
+#    print(f"Week {w}:")
+#    print("  ❗ Missing lot_ids in available:", detail["missing_lot_ids"])
+#    print("  ⚠️  Unexpected surplus lot_ids:", detail["surplus_lot_ids"])
+#🔍 検査結果の意味：
+#フィールド	説明
+#missing_lot_ids
+#SやCOで使われているが、I(n-1)+P(n)に存在しないlot_id（≒供給漏れ or typo）
+#surplus_lot_ids
+#PまたはI(n-1)にあるが、SやCOに使われず、I(n)にも存在しないlot_id（≒在庫不明ロス）
+#
+#補足オプション（全Networkでの一括確認）
+def check_all_nodes_lot_id_consistency(root_node):
+    results = {}
+    def traverse(node):
+        result = check_lot_id_consistency(node)
+        if result:
+            results[node.name] = result
+        for child in getattr(node, "children", []):
+            traverse(child)
+    traverse(root_node)
+    return results
+# ①「lot_idの重複検出器」
+#（同じ週に同じlot_idが複数回使用されていないか？を検出）
+def detect_lot_id_duplicates(node):
+    """
+    Detect duplicate lot_ids within the same week in any PSI list (S, CO, I, P).
+    Parameters:
+        node (Node): Node object with psi4supply.
+    Returns:
+        dict: {week: {psi_type: [duplicate lot_ids]}}
+    """
+    duplicates_by_week = {}
+    for w, week_data in enumerate(node.psi4supply):
+        if len(week_data) < 4:
+            continue
+        week_duplicates = {}
+        psi_labels = ['S', 'CO', 'I', 'P']
+        for i, label in enumerate(psi_labels):
+            lot_list = week_data[i]
+            seen = set()
+            dup = set()
+            for lot in lot_list:
+                if lot in seen:
+                    dup.add(lot)
+                else:
+                    seen.add(lot)
+            if dup:
+                week_duplicates[label] = sorted(dup)
+        if week_duplicates:
+            duplicates_by_week[w] = week_duplicates
+    return duplicates_by_week
+# ②「自動修正候補を提示する機能」
+#（lot_idが欠落していた場合に、代替候補をサジェスト）
+def suggest_missing_lot_ids(node):
+    """
+    Suggest repair candidates for missing lot_ids based on I(n-1)+P(n) and S+CO.
+    Parameters:
+        node (Node): Node object with psi4supply.
+    Returns:
+        dict: {week: {"missing_lot_ids": [...], "repair_candidates": [...]}}
+    """
+    suggestions = {}
+    for w in range(1, len(node.psi4supply)):
+        S = set(node.psi4supply[w][0])
+        CO = set(node.psi4supply[w][1])
+        I = set(node.psi4supply[w][2])
+        P = set(node.psi4supply[w][3])
+        I_prev = set(node.psi4supply[w-1][2])
+        available = I_prev.union(P)
+        consumed = S.union(CO)
+        missing = consumed - available
+        if missing:
+            # 推測ロジック：同一 node_name & iso_week に存在する lot_idパターンから補完候補を推定
+            base_prefix = None
+            for lot_id in missing:
+                node_part = lot_id[:-10]
+                base_prefix = node_part + lot_id[-10:-4]  # YYYYWW部を復元
+                break
+            # 同一prefixに対して、未使用のNNNNを探索（10000まで仮定）
+            candidate_lots = [f"{base_prefix}{str(i).zfill(4)}" for i in range(1, 10000)]
+            existing = available.union(consumed).union(I)
+            repair_candidates = [lot for lot in candidate_lots if lot not in existing][:len(missing)]
+            suggestions[w] = {
+                "missing_lot_ids": sorted(missing),
+                "repair_candidates": repair_candidates
+            }
+    return suggestions
+## 重複チェック
+#dups = detect_lot_id_duplicates(some_node)
+#for w, detail in dups.items():
+#    print(f"Week {w} duplicates:", detail)
+## 自動修正サジェスト
+#fixes = suggest_missing_lot_ids(some_node)
+#for w, f in fixes.items():
+#    print(f"\nWeek {w}")
+#    print("  ❗ Missing:", f["missing_lot_ids"])
+#    print("  🔧 Suggested repairs:", f["repair_candidates"])

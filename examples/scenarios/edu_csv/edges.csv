@@ -1,0 +1,4 @@
+src,dst,product_id,capacity,cost
+FARM_01,MILL_01,RICE_A,120,0.8
+MILL_01,WH_01,RICE_A,100,1
+WH_01,RET_01,RICE_A,2,1.5

@@ -1,0 +1,6 @@
+# requirements.txt
+
+sqlalchemy>=2.0
+streamlit>=1.35
+pandas>=2.0
+altair>=5.0
