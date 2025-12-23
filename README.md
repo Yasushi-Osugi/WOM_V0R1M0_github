@@ -1,6 +1,9 @@
 # WOM V0R1M0 (Multi-Product / CSV Edition)
 Weekly Operation Model – Weekly PSI Planning & Simulation (Educational OSS)
 
+WOMの設計思想と背景は note 記事の下記URLを参照してください。
+https://note.com/osuosu1123/n/n37e8b53c5b07
+
 ## はじめに
 WOM（Weekly Operation Model）は、経営の意思決定と現場オペレーションを  
 **「週次」** という共通リズムで接続するための実行モデルです。
