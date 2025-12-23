@@ -1,6 +1,14 @@
 # WOM V0R1M0 (Multi-Product / CSV Edition)
 Weekly Operation Model – Weekly PSI Planning & Simulation (Educational OSS)
 
+> **English (Summary)**
+>
+> WOM (Weekly Operation Model) is an executable model designed to connect management decisions and supply chain operations on a weekly basis.
+> This repository provides a minimal, CSV-based, multi-product PSI (Production / Ship / Inventory) planning and simulation environment.
+> 
+> The focus of WOM is not on finding an optimal solution, but on making decision impacts visible by running demand, constraints, and allocation rules through a complete weekly operation loop.
+
+
 WOMの設計思想と背景は note 記事の下記URLを参照してください。
 https://note.com/osuosu1123/n/n37e8b53c5b07
 
