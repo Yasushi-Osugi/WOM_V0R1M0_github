@@ -67,6 +67,32 @@ o	metadata.json, parameters.json 等
 •	PSIグラフが表示される
 •	out/ と plan_data/psi_state/ が更新される
 
+
+## node_name の予約語ルールについて
+
+WOM では、サプライチェーン構造を CSV で定義する際、`node_name` にいくつかの予約語（接頭語）を使用します。
+これは命名規則ではなく、PSI 計画ロジックにおける **ノードの役割（視点）** を明示するための仕様です。
+
+### 共通ルール
+- `supply_point` は inbound / outbound の両 supply chain に共通する論理ルートです。
+- `node_name` の接頭語により、ノードの役割が判別されます。
+
+### inbound supply chain（供給側）
+root → `supply_point` → `MOM`xxxx → child nodes
+- `MOM`xxxx: `MOM`は接頭語。xxxxは任意。  
+  生産・供給の起点となるノード（Mother Of Manufacturing）  
+  PSI 計画では供給（PUSH）側の起点として扱われます。
+
+### outbound supply chain（需要側）
+
+- `DAD`yyyy: `DAD`は接頭語。yyyyは任意。  
+  需要・販売チャネルの集約ノード（Demand Aggregation on Distribution）  
+  PSI 計画では需要（PULL）側の起点として扱われます。
+root → `supply_point` → `DAD`yyyy → child nodes
+これらの予約語により、WOM は inbound / outbound を同一の計画ロジックで扱いながら、
+供給と需要の視点を明確に切り替えています。
+
+
 ### プラグインについて
 WOM の挙動は `pysi/plugins/` 配下のプラグインで制御されます。  
 需要の与え方、能力制約の反映方法、不足時の配分ルールなどは、プラグインを差し替えることで変更できます。  
