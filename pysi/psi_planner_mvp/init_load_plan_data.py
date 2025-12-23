@@ -39,6 +39,9 @@ from pysi.plan.operations import *
 from pysi.network.node_base import Node, PlanNode, GUINode
 from pysi.network.tree import *
 from pysi.evaluate.evaluate_cost_models_v2 import gui_run_initial_propagation, propagate_cost_to_plan_nodes, load_tobe_prices, assign_tobe_prices_to_leaf_nodes, load_asis_prices, assign_asis_prices_to_root_nodes
+
+from pysi.io.psi_state_io import export_psi_state
+
 # ********************************
 # Definition start
 # ********************************
@@ -824,6 +827,8 @@ def make_nodes_decouple_all(node):
         else:
             print("error: node dupplicated", parent_node.name)
     return nodes_decouple_all
+
+
     # +++++++++++++++++++++++++++++++++++++++++++++++
     # Mother Plant demand leveling
     # root_node_outbound / supply / [w][0] setting S_allocated&pre_prod&leveled
@@ -1027,6 +1032,159 @@ def demand_leveling_on_ship(root_node_outbound, pre_prod_week, year_st, year_end
         else:
             root_node_outbound.psi4supply[w][0] = []
             #node_psi_dict_Ot4Sp[node_name][w][0] = []
+
+
+#@251123 
+# *************************************************
+# demand_leveling_with_capacity
+# *************************************************
+import math
+from collections import defaultdict
+
+def normalize_weekly_capacity(weekly_capacity_list, plan_range, default_fill=0):
+    """
+    weekly_capacity_list: [{"week":1,"capacity":4000}, ...]
+    plan_range: number of years to cover (used to compute max weeks = 53 * plan_range)
+    returns: list length = 53*plan_range where index w => capacity for that week (0-indexed)
+    """
+    max_weeks = 53 * plan_range
+    cap_arr = [default_fill] * (max_weeks)
+    for entry in weekly_capacity_list:
+        w = int(entry.get("week", -1))
+        if 1 <= w <= max_weeks:
+            cap_arr[w-1] = entry.get("capacity", default_fill)
+    # forward/backward fill optional: fill zeros with nearest non-zero if desired
+    # simple forward fill:
+    last = None
+    for i in range(max_weeks):
+        if cap_arr[i] != default_fill:
+            last = cap_arr[i]
+        else:
+            if last is not None:
+                cap_arr[i] = last
+    return cap_arr
+
+def flatten_s_list(leveling_S_in):
+    # leveling_S_in: root_node_outbound.psi4demand where each element is psi[w][0] == list of lot ids (or [])
+    S_list = []
+    for psi in leveling_S_in:
+        # psi[0] expected to be list of lot ids or empty list
+        if psi and psi[0]:
+            S_list.append(psi[0])
+        else:
+            S_list.append([])
+    # flatten to one long list (remove empty sublists)
+    S_one_list = [item for sub in S_list for item in sub] 
+    return S_one_list
+
+
+
+def demand_leveling_with_capacity(root_node_outbound, weekly_capacity_vector, pre_prod_week=26, year_st=2024, plan_range=2):
+    """
+    Generalized leveling that accepts weekly_capacity_vector (list indexed by week-1)
+    - root_node_outbound.psi4demand is assumed to be list-of-weeks where each element psi[w][0] is list of lot ids (LT-shifted)
+    - This function will set root_node_outbound.psi4supply[w][0] = allocated lot list complying with weekly_capacity_vector.
+    - pre_prod_week controls how many weeks in advance production should start (used to align allocation).
+    """
+    # --- read inputs
+    plan_year_st = int(year_st)
+    max_weeks = 53 * plan_range
+
+    # flatten incoming S_list (LT-shifted demands at root outbound)
+    leveling_S_in = root_node_outbound.psi4demand
+    S_one_list = flatten_s_list(leveling_S_in)
+
+    # --- compute yearly boundaries and lots per year (re-using user's helper functions if exists)
+    year_lots_list = []
+    year_week_list = []
+    year_list = []
+    for yyyy in range(plan_year_st, plan_year_st + plan_range + 1):
+        year_list.append(yyyy)
+        week_count = is_52_or_53_week_year(yyyy)  # assume available
+        year_week_list.append(week_count)
+        # count lots in that year's slice from S_one_list
+        year_lots = count_lots_yyyy(S_one_list, str(yyyy))  # function re-used from user's code
+        year_lots_list.append(year_lots)
+
+    # --- Instead of static average, compute weekly targets using provided weekly_capacity_vector
+    # weekly_capacity_vector length should be >= max_weeks
+    if len(weekly_capacity_vector) < max_weeks:
+        # pad with zeros
+        weekly_capacity_vector = weekly_capacity_vector + [0] * (max_weeks - len(weekly_capacity_vector))
+    # Convert capacity per week to lot capacity per week (if capacity is in units, and lots map to units, mapping may be needed)
+    # Here we assume 1 lot == 1 unit for simplicity; if not, you must provide conversion ratio lot_unit_map
+    lot_capacity_per_week = weekly_capacity_vector  # rename for clarity
+
+    # --- Allocate S_one_list into weekly buckets observing lot_capacity_per_week
+    S_allocated = []
+    idx = 0
+    total_lots = len(S_one_list)
+    for w in range(max_weeks):
+        cap = int(lot_capacity_per_week[w])
+        if cap <= 0:
+            S_allocated.append([])
+            continue
+        # take up to cap lot ids from S_one_list
+        if idx >= total_lots:
+            S_allocated.append([])
+            continue
+        slice_end = min(idx + cap, total_lots)
+        S_allocated.append(S_one_list[idx:slice_end])
+        idx = slice_end
+
+    # any remaining lots after filling weeks -> append to overflow weeks at the end (or handle as unfulfilled)
+    if idx < total_lots:
+        # overflow handling: append leftovers to last week (could be marked as unfulfilled)
+        leftover = S_one_list[idx:]
+        S_allocated[-1].extend(leftover)
+        idx = total_lots
+
+    # --- set psi4supply on root node
+    # ensure psi4supply exists and sized >= max_weeks
+    if not hasattr(root_node_outbound, "psi4supply") or len(root_node_outbound.psi4supply) < max_weeks:
+        # initialize structure
+        root_node_outbound.psi4supply = [[[]] for _ in range(max_weeks)]
+
+    for w in range(max_weeks):
+        root_node_outbound.psi4supply[w][0] = S_allocated[w] if w < len(S_allocated) else []
+
+    # done: caller should then run calcS2P / calcPS2I as existing
+    return S_allocated
+# *************************************************
+# END of demand_leveling_with_capacity
+# *************************************************
+
+
+
+# *************************************************
+# transform optimiser output / capacity JSON to PSI Planner capacity
+# *************************************************
+import json
+
+def apply_scn_capacity_to_psi(root_node_outbound, scn_json_obj, mom_node_id, pre_prod_week=26, year_st=2024, plan_range=2):
+    """
+    scn_json_obj: parsed JSON dict from SCN optimiser
+    mom_node_id: "MOM_Tokyo" etc
+    """
+    # find node
+    nodes = scn_json_obj.get("nodes", [])
+    weekly_capacity_list = []
+    for n in nodes:
+        if n.get("node_id") == mom_node_id:
+            weekly_capacity_list = n.get("weekly_capacity", [])
+            break
+    # normalize
+    weekly_capacity_vector = normalize_weekly_capacity(weekly_capacity_list, plan_range, default_fill=0)
+    # call leveling
+    S_allocated = demand_leveling_with_capacity(root_node_outbound, weekly_capacity_vector, pre_prod_week, year_st, plan_range)
+    return S_allocated
+
+
+
+
+
+
+
     # +++++++++++++++++++++++++++++++++++++++++++++++
 def place_P_in_supply_LT(w, child, lot):  # lot LT_shift on P
     # *******************************************
@@ -1101,9 +1259,38 @@ def find_path_to_leaf_with_parent(node, leaf_node, current_path=[]):
         parent = leaf_node.parent
         path = find_path_to_leaf_with_parent(node, parent, current_path.copy())
     return path
+
 #        if path:
 #
 #            return path
+
+
+def extract_node_name4multi_prod(lot_id: str) -> str:
+## === lot-id formatting (shared) ===
+#LOT_SEP = "-"  # node・product には使わない安全な記号を選ぶ
+## ... (_sanitize_tokenやその他のコードは省略)
+
+    """
+    lot_ID (形式: NODE-PRODUCT-YYYYWWNNNN) から node_name を抽出します。
+    
+    node_nameは最初の LOT_SEP ('-') までの文字列です。
+    
+    Parameters:
+        lot_id (str): 抽出対象のロットID文字列。
+        
+    Returns:
+        str: 抽出されたノード名。LOT_SEPが見つからない場合は元の文字列を返します。
+    """
+    # LOT_SEPで分割し、最初の要素（インデックス0）を取得します。
+    # lot_idが "NODE-PRODUCT-..." の形式の場合、
+    # .split(LOT_SEP, 1) は ['NODE', 'PRODUCT-YYYYWWNNNN'] を返します。
+    # [0] は 'NODE' です。
+ 
+    LOT_SEP = "-"  # node・product には使わない安全な記号を選ぶ
+    return lot_id.split(LOT_SEP, 1)[0]
+
+
+
 def extract_node_name(stringA):
     """
     Extract the node name from a string by removing the last 9 characters (YYYYWWNNN).
@@ -1148,7 +1335,10 @@ def feedback_psi_lists(node, nodes):
             #@STOP
             #print("node.psi4supply", node.psi4supply)
             confirmed_S_lots = node.psi4supply[w][0]  # 親の確定出荷confS lot
-            print("confirmed_S_lots", confirmed_S_lots)
+
+            #@STOP
+            #print("confirmed_S_lots", confirmed_S_lots)
+            
             # 出荷先nodeを特定して
             # 一般には、下記のLT shiftだが・・・・・
             # 出荷先の ETA = LT_shift(ETD) でP place_lot
@@ -1169,10 +1359,18 @@ def feedback_psi_lists(node, nodes):
                     # *********************************************************
                     # child#ship2node = find_node_to_ship(node, lot)
                     # lotidからleaf_nodeのpointerを返す
-                    print("lot_ID", lot)
-                    leaf_node_name = extract_node_name(lot)
-                    print("lot_ID leaf_node_name", lot, leaf_node_name )
+
+                    #@STOP
+                    #print("lot_ID", lot)
+                    
+                    leaf_node_name = extract_node_name4multi_prod(lot)
+                    #leaf_node_name = extract_node_name(lot)
+
+                    #@STOP
+                    #print("lot_ID leaf_node_name", lot, leaf_node_name )
+
                     leaf_node = nodes[leaf_node_name]
+                    
                     # 末端からあるnodeAまでleaf_nodeまでのnode_listをpathで返す
                     current_path = []
                     path = []
@@ -2636,7 +2834,89 @@ class PSIPlannerApp:
         with open(os.path.join(save_directory, 'psi_planner_app.pkl'), "wb") as f:
             pickle.dump(psi_planner_app_save.__dict__, f)
         print("データを保存しました。")
+
+
+
     def save_to_directory(self):
+        # 1. Save先ディレクトリ
+        save_directory = filedialog.askdirectory()
+        if not save_directory:
+            return
+
+        # 2. 初期 CSV のコピー（従来どおり）
+        for filename in os.listdir(self.directory):
+            if filename.endswith(".csv"):
+                src = os.path.join(self.directory, filename)
+                if os.path.isfile(src):
+                    shutil.copy(src, save_directory)
+
+        # 3. PSI_State v1 の export
+        # 3-1. physical roots
+        physical_out = getattr(self, "root_node_out_opt", None)
+        physical_in  = getattr(self, "root_node_inbound", None)
+
+        # 3-2. multi-product plan roots (SqlPlanEnv 相当)
+        plan_env = getattr(self, "plan_env", None)
+        
+        if plan_env is None:
+            # 旧 CSV 版などで plan_env が無い場合はフォールバックして何もしない
+            print("[WARN] plan_env is None; psi_state export skipped.")
+        else:
+            prod_roots_out = getattr(plan_env, "prod_tree_dict_OT", {})
+            prod_roots_in  = getattr(plan_env, "prod_tree_dict_IN", {})
+
+            weeks = int(self.plan_range) * 53  # 例: 3年 → 159 週
+
+            params = {
+                "calendar": {
+                    "year_start": int(getattr(self, "plan_year_start", 2024)),
+                    "weeks": weeks,
+                    "lot_size": int(getattr(self, "lot_size", 1000)),
+                    "pre_prod_weeks": int(getattr(self, "pre_proc_LT", 0)),
+                },
+                "scenario": {
+                    "scenario_id": getattr(self, "current_scenario_id", "UNKNOWN"),
+                    "description": "",
+                    "plugins": list(getattr(self, "active_plugin_names", lambda: [])()),
+                },
+            }
+
+            meta = {
+                "created_at": getattr(self, "get_iso_timestamp", lambda: "")(),
+                "wom_version": getattr(self, "get_wom_version", lambda: "")(),
+                "code_hash": getattr(self, "get_git_hash", lambda: "")(),
+                "psi_state_id": getattr(self, "current_psi_state_id", "UNNAMED_STATE"),
+                "notes": "Saved from GUI menu 'SAVE: to Directory'",
+            }
+
+            office_meta = {
+                "corporate_HQ": "corporate_HQ",
+                "sales_office": "sales_office",
+                "production_office": "supply_point",
+                "procurement_office": "procurement_office",
+            }
+
+            state_hash = export_psi_state(
+                save_directory,
+                physical_out,
+                physical_in,
+                prod_roots_out,
+                prod_roots_in,
+                weeks,
+                params,
+                meta,
+                office_meta=office_meta,
+                fifo_mode="FIFO",
+            )
+            print(f"[INFO] psi_state saved. state_hash={state_hash}")
+
+        # 4. 完了メッセージ
+        messagebox.showinfo("Save Completed", "Plan data save is completed")
+
+
+
+
+    def save_to_directory_OLD(self):
         # 1. Save先となるdirectoryの問い合わせ
         save_directory = filedialog.askdirectory()
         if not save_directory:
@@ -2681,6 +2961,8 @@ class PSIPlannerApp:
                 print(f"{filename} does not exist")
         # 6. 完了メッセージの表示
         messagebox.showinfo("Save Completed", "Plan data save is completed")
+
+
     def load_data(self, load_directory):
         with open(os.path.join(load_directory, 'psi_planner_app.pkl'), "rb") as f:
             loaded_attributes = pickle.load(f)

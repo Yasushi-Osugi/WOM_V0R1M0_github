@@ -1,0 +1,102 @@
+{
+  "scenario_type": "MI",
+  "scenario_id": "MI_FY2027_GLOBAL_RICE_geo_risk_v1",
+  "name": "FY2027 Global Rice – Management Integrated (Geo Risk)",
+  "label": "FY2027 グローバル米・経営統合シナリオ（地政学リスク版）",
+  "version": "1.0",
+  "created_at": "2025-11-29T09:20:00+09:00",
+  "author": "WOM-Owner",
+  "tags": [
+    "MANAGEMENT_INTEGRATED",
+    "GLOBAL_RICE",
+    "GEO_RISK",
+    "FY2027"
+  ],
+
+  "meta": {
+    "description": "BL_FY2027_GLOBAL_RICE_v1 と EC_geo_risk_Russia_2027Q2_v1 を前提に、取締役会で採択された“経営としての意思入れ”を反映した統合シナリオ。",
+    "bl_ref": "BL_FY2027_GLOBAL_RICE_v1",
+    "ec_ref": "EC_geo_risk_Russia_2027Q2_v1",
+    "approved_by": [
+      "CEO",
+      "CFO",
+      "Head of Supply Chain"
+    ],
+    "approved_at": "2025-12-15T10:00:00+09:00",
+    "status": "approved"
+  },
+
+  "management_overrides": {
+    "kpi_targets_override": {
+      "service_level": {
+        "target_fill_rate_pct": 96.0,
+        "max_stockout_rate_pct": 2.0
+      },
+      "inventory": {
+        "max_days_of_supply_global": 75,
+        "target_weeks_of_supply_leaf": 5
+      },
+      "financial": {
+        "target_gross_margin_pct": 17.0,
+        "target_operating_margin_pct": 7.0,
+        "max_inventory_to_sales_ratio": 0.22
+      }
+    },
+
+    "policy_switches": {
+      "priority_market": [
+        "JP",
+        "ASIA"
+      ],
+      "deprioritized_market": [
+        "EU"
+      ],
+      "capex_policy": {
+        "allowed": false,
+        "comment": "CAPEX は FY2028 以降に先送り。FY2027 は cash-preservation を優先。"
+      }
+    },
+
+    "guardrails": {
+      "max_capex_mjpy": 0.0,
+      "max_negative_free_cash_flow_mjpy": -500.0,
+      "max_stockout_rate_any_region_pct": 5.0,
+      "notes": [
+        "EU 地域のシェア低下は一時的に容認。ただし欠品率 5%超は不可。",
+        "国内市場（JP）は fill-rate 98% を維持する方向で optimiser を再設定。"
+      ]
+    }
+  },
+
+  "simulation_settings": {
+    "time_horizon_weeks": 104,
+    "run_what_if_variants": [
+      {
+        "variant_id": "MI_geo_risk_high_buffer",
+        "description": "国内備蓄をさらに +2 週間積み増しするケース",
+        "buffer_additional_weeks_for_nodes": [
+          "GR_JPN",
+          "WS2JPN"
+        ]
+      },
+      {
+        "variant_id": "MI_geo_risk_cost_focus",
+        "description": "在庫と物流コスト最小化を優先し、サービスレベルを 95% まで許容",
+        "service_level_floor_pct": 95.0
+      }
+    ],
+    "optimizer_objective": "cash_flow_and_risk_balanced",
+    "use_scenario_plugins": [
+      "ai_scenario_planning",
+      "capacity_clip",
+      "alloc_jit_priority",
+      "diagnostics"
+    ]
+  },
+
+  "notes_for_board": [
+    "本シナリオは『国内安定・海外選択』を基本方針とする。",
+    "ロシア・欧州リスクが想定より軽微な場合、FY2028 以降に CAPEX 再評価を実施。",
+    "AI Scenario Plugin による四半期ごとのシナリオ更新を前提とし、MI_scenario.json もローリング更新。"
+  ]
+}

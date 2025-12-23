@@ -76,6 +76,7 @@ def shiftS2P_LV_replace(psiS, shift_week, lv_week):  # LV:long vacations
         # 安全在庫とカレンダ制約を考慮した着荷予定週Pに、w週Sからoffsetする
         psiS[eta_shift][3].extend(psiS[w][0])  # P made by shifting S with
     return psiS
+
 class Node:
     def __init__(self, name: str):
         self.name = name
@@ -829,14 +830,17 @@ class Node:
                 return result
             diff_list = fifo_lot_diff(i0, p, s)
             self.psi4supply[w][2] = diff_list
-            if self.name == "DADCAL":
-                if w < 58:
-                    print("s, co, i0, i1, p ", w)
-                    print("s" , w, s )
-                    print("co", w, co)
-                    print("i0", w, i0)
-                    print("i1", w, diff_list)
-                    print("p" , w, p )
+
+            #@STOP
+            #if self.name == "DADCAL":
+            #    if w < 58:
+            #        print("s, co, i0, i1, p ", w)
+            #        print("s" , w, s )
+            #        print("co", w, co)
+            #        print("i0", w, i0)
+            #        print("i1", w, diff_list)
+            #        print("p" , w, p )
+            
     #@250818 UPDATE
     def calcPS2I_decouple4supply(self):
         # まず長さを揃える：supply を demand に合わせる

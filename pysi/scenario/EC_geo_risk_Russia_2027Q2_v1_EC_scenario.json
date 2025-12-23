@@ -1,0 +1,119 @@
+{
+  "scenario_type": "EC",
+  "scenario_id": "EC_geo_risk_Russia_2027Q2_v1",
+  "name": "Geo Risk – Russia/Europe Corridor 2027Q2",
+  "label": "ロシア・欧州幹線リスクシナリオ (2027Q2)",
+  "version": "1.0",
+  "effective_from_week": "2027W14",
+  "effective_to_week": "2027W39",
+  "created_at": "2025-11-29T09:10:00+09:00",
+  "author": "WOM-Owner",
+  "tags": [
+    "GEO_RISK",
+    "RUSSIA",
+    "EU_CORRIDOR",
+    "ENERGY_SHOCK"
+  ],
+
+  "meta": {
+    "description": "ロシア周辺リスクの高まりにより、欧州向けエネルギー・物流コストが上昇し、一部ルートが制約を受けるケース。",
+    "base_bl_scenario_id": "BL_FY2027_GLOBAL_RICE_v1",
+    "source": "AI Scenario Plugin + マクロ経済調査メモ",
+    "confidence_level": 0.65
+  },
+
+  "external_shocks": {
+    "energy": {
+      "global_energy_cost_index": 1.18,
+      "region_adjustments": {
+        "EU": 1.25,
+        "JP": 1.05
+      }
+    },
+
+    "logistics": {
+      "global_logistics_cost_index": 1.10,
+      "lane_multipliers": [
+        {
+          "lane_id": "RU-EU_SEAROUTE",
+          "cost_multiplier": 1.30,
+          "risk_flag": "congestion",
+          "comment": "黒海ルートの混雑・保険料上昇"
+        },
+        {
+          "lane_id": "ASIA-JP_OCEAN",
+          "cost_multiplier": 1.08,
+          "risk_flag": "fuel_surcharge",
+          "comment": "燃料サーチャージ増加"
+        }
+      ]
+    },
+
+    "capacity": {
+      "node_capacity_shocks": [
+        {
+          "node_name": "RT_EU",
+          "capacity_multiplier": 0.75,
+          "reason": "港湾混雑・保守遅延",
+          "duration_weeks": 26
+        }
+      ],
+      "edge_capacity_shocks": [
+        {
+          "from_node": "supply_point",
+          "to_node": "DAD_EU",
+          "capacity_multiplier": 0.7,
+          "reason": "制裁リスクの高まりによる実質制限"
+        }
+      ]
+    },
+
+    "demand": {
+      "region_demand_shocks_pct": [
+        {
+          "region": "EU",
+          "product": "CAL_RICE_1",
+          "delta_pct": -5.0,
+          "reason": "購買力低下・インフレ持続"
+        },
+        {
+          "region": "JP",
+          "product": "Reserv_Rice",
+          "delta_pct": 3.0,
+          "reason": "国内リスク分散のため備蓄需要が増加"
+        }
+      ]
+    },
+
+    "finance": {
+      "interest_rate_delta_pctpt": 0.5,
+      "fx_shift": {
+        "USDJPY": 155.0,
+        "EURJPY": 160.0
+      },
+      "comment": "世界的な金融引き締め継続を前提"
+    }
+  },
+
+  "policy_implications": {
+    "recommended_buffer_adjustments": [
+      {
+        "node_name": "GR_JPN",
+        "delta_weeks_of_supply": 2,
+        "reason": "海外リスク増加に伴う国内備蓄増"
+      }
+    ],
+    "recommended_route_prefs": [
+      {
+        "from": "supply_point",
+        "to": "DADJPN",
+        "priority_delta": 0.2,
+        "reason": "欧州経由を避け、日本向けを優先配分"
+      }
+    ],
+    "notes_for_management": [
+      "欧州向け供給はシェア維持ではなく利益確保を優先",
+      "国内備蓄とアジア向け供給を安全弁として位置付ける"
+    ]
+  }
+}

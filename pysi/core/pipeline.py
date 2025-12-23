@@ -1,10 +1,15 @@
 # pysi/core/pipeline.py
-
+# 完全修正版（2025.11.21） - SCN Optimiser連携 + capacity_allocatorプラグイン対応
 
 from __future__ import annotations
 from typing import Any, Dict
+import subprocess   # ← 追加：長期計画モードでOptimiser自動実行用
+import os           # ← 追加：ファイル存在チェック用
+
 from pysi.core.hooks.core import HookBus
 
+# plugin: 
+from pysi.plugins.capacity_allocator import capacity_constraint_allocator   # ← 追加（プラグイン読み込み）
 
 def default_allocator(graph, week_idx: int, demand_map, tickets=None, **ctx):
     """最小フォールバック：配送/入荷はゼロ、需要だけ run_one_step に渡す。"""
@@ -14,7 +19,6 @@ def default_allocator(graph, week_idx: int, demand_map, tickets=None, **ctx):
         "demand_map": demand_map,   # {(node, prod): {week: qty}}
         "tickets": tickets or [],   # 週の需要チケット（あれば）
     }
-
 
 def run_one_step(root, week_idx: int, allocation, params) -> bool:
     """週ごとの反映：receipts → shipments → demand(leaf) → 履歴ログ(+ avg_urgency)"""
@@ -71,13 +75,27 @@ def run_one_step(root, week_idx: int, allocation, params) -> bool:
     hist["avg_urgency"].append(avg_u if avg_u is not None else None)
     return True
 
-
 class Pipeline:
     """ジオラマ的・段階型パイプライン。全Hookはここを通る。"""
     def __init__(self, hooks: HookBus, io, logger=None):
         self.hooks, self.io, self.logger = hooks, io, logger
 
     def run(self, db_path: str, scenario_id: str, calendar: Dict[str, Any], out_dir: str = "out"):
+        # ---- 追加：長期能力計画モードでSCN Optimiser自動実行 ----
+        long_term_keywords = ["long_term", "capacity_planning", "annual_plan", "quarterly_plan"]
+        if any(keyword in scenario_id.lower() for keyword in long_term_keywords):
+            print("=== 長期能力計画モード：SCN Optimiserを実行 ===")
+            optimiser_script = "SCN_optimiser_WOM_REALDATA_EXCEL_MENU_COMPLETE2.py"
+            if os.path.exists(optimiser_script):
+                result = subprocess.run(["python", optimiser_script], capture_output=True, text=True)
+                if result.returncode == 0:
+                    print("SCN Optimiser成功 → weekly_constraints.json を生成しました")
+                else:
+                    print(f"SCN Optimiser失敗: {result.stderr}")
+                    print("既存のweekly_constraints.jsonがあれば使用します")
+            else:
+                print(f"{optimiser_script} が見つかりません。手動実行してください")
+
         # ---- Timebase ----
         calendar = self.hooks.apply_filters(
             "timebase:calendar:build", calendar,
@@ -120,8 +138,10 @@ class Pipeline:
         self.hooks.do_action("plan:pre",
                              db_path=db_path, scenario_id=scenario_id, calendar=calendar, logger=self.logger)
 
+        # ← 修正：capacity_constraint_allocatorを優先適用（JSON制約が自動反映）
         allocator_fn = self.hooks.apply_filters(
-            "plan:allocate:capacity", default_allocator,
+            "plan:allocate:capacity",
+            capacity_constraint_allocator,   # ← これで完全連携
             graph=root, calendar=calendar, scenario_id=scenario_id, logger=self.logger
         )
 
@@ -131,7 +151,7 @@ class Pipeline:
         tickets_by_week = self.hooks.apply_filters(
             "demand:tickets:build",
             {},                               # 既定値は空
-            demand_map=demand_map,            # {(node,prod):{week:qty}}
+            demand_map=demand_map,
             calendar=calendar,
             logger=self.logger,
         )
@@ -139,12 +159,6 @@ class Pipeline:
         weeks = int(calendar["weeks"] if isinstance(calendar, dict) else getattr(calendar, "weeks", 0))
         for week_idx in range(int(weeks)):
             week_tickets = tickets_by_week.get(week_idx, [])
-
-            #allocation = allocator_fn(
-            #    root, week_idx, demand_map,
-            #    tickets=week_tickets, calendar=calendar, logger=self.logger
-            #)
-
 
             allocation = allocator_fn(
                 root, week_idx, demand_map,
@@ -159,13 +173,9 @@ class Pipeline:
                 week_idx=week_idx, logger=self.logger,
             )
 
-
             # 直後に shipments / receipts を取り出して共通で使う
             ships = allocation.get("shipments", {}) or {}
             recs  = allocation.get("receipts",  {}) or {}
-
-
-
 
             # ---- 可視ログ（デバッグ）: ship/recv 合計と平均urgency ----
             if self.logger:
@@ -244,7 +254,6 @@ class Pipeline:
 
             # 需要チケット（参考ログ）
             for t in (week_tickets or []):
-                # t = {ticket_id,node,product,week,qty,urgency,...}
                 movelog.append({
                     "week_idx": int(week_idx),
                     "kind": "ticket",
@@ -308,10 +317,8 @@ class Pipeline:
         }
         for ex in exporters:
             try:
-                # 新API: **export_ctx を受け取るExporter
                 ex(result, **export_ctx)
             except TypeError:
-                # 後方互換: 旧Exporter（引数 result のみ）
                 ex(result)
             except Exception as e:
                 self.logger and self.logger.exception(f"exporter failed: {e}")

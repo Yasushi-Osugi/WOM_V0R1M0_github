@@ -54,6 +54,7 @@ def extract_subtree_by_product(root_node: Node, product_name: str) -> Optional[N
         return any(contains_product(child) for child in node.children)
     if not contains_product(root_node):
         return None
+    
     # 新しいノードを作成（Node(name)のみコピー、他の情報は再利用せず）
     print("root_node.name", root_node.name)
     new_node = Node(root_node.name)    #### new_node

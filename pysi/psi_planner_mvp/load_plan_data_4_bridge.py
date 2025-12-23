@@ -1150,8 +1150,12 @@ def feedback_psi_lists(node, nodes):
         for w in range(53 * node.plan_range):
             #@STOP
             #print("node.psi4supply", node.psi4supply)
+            
             confirmed_S_lots = node.psi4supply[w][0]  # 親の確定出荷confS lot
-            print("confirmed_S_lots", confirmed_S_lots)
+
+            #@STOP
+            #print("confirmed_S_lots", confirmed_S_lots)
+            
             # 出荷先nodeを特定して
             # 一般には、下記のLT shiftだが・・・・・
             # 出荷先の ETA = LT_shift(ETD) でP place_lot

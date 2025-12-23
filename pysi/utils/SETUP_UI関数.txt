@@ -1,31 +1,31 @@
 250511QA_planning_engine_refactoring
 
 
-‚²Ž¿–â‚ ‚è‚ª‚Æ‚¤‚²‚´‚¢‚Ü‚·I‘å™—l‚ªŠJ”­’†‚Ì"Global Weekly PSI Planner"‚ÌƒR[ƒh‚ÉŠÖ‚·‚é–â‘è“_‚ÆƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒO‚Ì•ûŒü«‚É‚Â‚¢‚ÄA”ñí‚ÉÚ×‚Èà–¾‚ð‚¢‚½‚¾‚«‚Ü‚µ‚½BˆÈ‰º‚Ì–â‘è“_‚ð’†S‚ÉA‹ï‘Ì“I‚ÈƒAƒhƒoƒCƒX‚ð’ñ‹Ÿ‚µ‚Ü‚·F
+ï¿½ï¿½ï¿½ï¿½ï¿½â‚ ï¿½è‚ªï¿½Æ‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½Iï¿½å™ï¿½lï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"Global Weekly PSI Planner"ï¿½ÌƒRï¿½[ï¿½hï¿½ÉŠÖ‚ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Æƒï¿½ï¿½tï¿½@ï¿½Nï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½Ì•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É‚Â‚ï¿½ï¿½ÄAï¿½ï¿½ï¿½ÉÚ×‚Èï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½ï¿½Bï¿½È‰ï¿½ï¿½Ì–ï¿½ï¿½_ï¿½ð’†Sï¿½ÉAï¿½ï¿½Ì“Iï¿½ÈƒAï¿½hï¿½oï¿½Cï¿½Xï¿½ï¿½ñ‹Ÿ‚ï¿½ï¿½Ü‚ï¿½ï¿½F
 
-1. **`self`‚ÌŽg‚¢•ª‚¯‚É‚æ‚é¬—**i`PSIPlannerApp`ƒNƒ‰ƒX‚Æ`Node`ƒNƒ‰ƒX‚Ì`self`‚Ìˆá‚¢‚É‚æ‚éƒR[ƒh‚Ì•¡ŽG‚³j
-2. **ƒNƒ‰ƒXƒƒ\ƒbƒh vs ŠO•”ŠÖ”**i‚Ç‚¿‚ç‚ð‘I‚Ô‚×‚«‚©Aƒƒ‚ƒŠÁ”ï‚âˆ—‘¬“x‚Ö‚Ì‰e‹¿j
-3. **ƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒO‚Ì•ûŒü«**i`planning engine`•”•ª‚Ì®—AÄ—˜—p«‚ÌŒüãAŒ©’Ê‚µ‚Ì—Ç‚³j
+1. **`self`ï¿½ÌŽgï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É‚ï¿½é¬ï¿½ï¿½**ï¿½i`PSIPlannerApp`ï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½`Node`ï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½`self`ï¿½Ìˆá‚¢ï¿½É‚ï¿½ï¿½Rï¿½[ï¿½hï¿½Ì•ï¿½ï¿½Gï¿½ï¿½ï¿½j
+2. **ï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½\ï¿½bï¿½h vs ï¿½Oï¿½ï¿½ï¿½Öï¿½**ï¿½iï¿½Ç‚ï¿½ï¿½ï¿½ï¿½Iï¿½Ô‚×‚ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½âˆï¿½ï¿½ï¿½ï¿½ï¿½xï¿½Ö‚Ì‰eï¿½ï¿½ï¿½j
+3. **ï¿½ï¿½ï¿½tï¿½@ï¿½Nï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½Ì•ï¿½ï¿½ï¿½ï¿½ï¿½**ï¿½i`planning engine`ï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½Aï¿½Ä—ï¿½ï¿½pï¿½ï¿½ï¿½ÌŒï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Ê‚ï¿½ï¿½Ì—Ç‚ï¿½ï¿½j
 
-ˆÈ‰ºA‡”Ô‚É‰ñ“š‚µA•K—v‚É‰ž‚¶‚Ä‹ï‘Ì“I‚ÈƒR[ƒh—á‚âƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒO‚Ì’ñˆÄ‚ðs‚¢‚Ü‚·B
+ï¿½È‰ï¿½ï¿½Aï¿½ï¿½ï¿½Ô‚É‰ñ“š‚ï¿½ï¿½Aï¿½Kï¿½vï¿½É‰ï¿½ï¿½ï¿½ï¿½Ä‹ï¿½Ì“Iï¿½ÈƒRï¿½[ï¿½hï¿½ï¿½âƒŠï¿½tï¿½@ï¿½Nï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½Ì’ï¿½Ä‚ï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½ï¿½B
 
 ---
 
-### 1. `self`‚ÌŽg‚¢•ª‚¯‚É‚æ‚é¬—‚Ì‰ðÁ
+### 1. `self`ï¿½ÌŽgï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É‚ï¿½é¬ï¿½ï¿½ï¿½Ì‰ï¿½ï¿½ï¿½
 
-#### –â‘è‚Ì®—
-- `PSIPlannerApp`ƒNƒ‰ƒXiGUI‘¤j‚Æ`Node`ƒNƒ‰ƒXiƒf[ƒ^\‘¢‘¤j‚Å`self`‚ªˆÙ‚È‚éƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðŽw‚·‚½‚ßAƒR[ƒh‚ð“Ç‚ñ‚¾‚èƒfƒoƒbƒO‚µ‚½‚è‚·‚éÛ‚É¬—‚ª¶‚¶‚éB
-- —á‚¦‚ÎA`self.demand_planning()`‚Í`PSIPlannerApp`‚Ìƒƒ\ƒbƒh‚ÅA`self`‚Í`PSIPlannerApp`‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðŽw‚·Bˆê•ûA`calcPS2I4demand`‚Í`Node`ƒNƒ‰ƒX‚Ìƒƒ\ƒbƒh‚ÅA`self`‚Í`Node`‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðŽw‚·B
-- ‚±‚Ì‚æ‚¤‚ÈˆÙ‚È‚éƒNƒ‰ƒX‚Ì`self`‚ª¬Ý‚·‚é‚ÆA‚Ç‚Ì`self`‚ª‰½‚ðŽw‚µ‚Ä‚¢‚é‚Ì‚©’ÇÕ‚·‚é‚Ì‚ª“ï‚µ‚­‚È‚èAƒR[ƒh‚Ì‰Â“Ç«‚âƒƒ“ƒeƒiƒ“ƒX«‚ª’á‰º‚·‚éB
+#### ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½
+- `PSIPlannerApp`ï¿½Nï¿½ï¿½ï¿½Xï¿½iGUIï¿½ï¿½ï¿½jï¿½ï¿½`Node`ï¿½Nï¿½ï¿½ï¿½Xï¿½iï¿½fï¿½[ï¿½^ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½jï¿½ï¿½`self`ï¿½ï¿½ï¿½Ù‚È‚ï¿½Nï¿½ï¿½ï¿½Xï¿½ÌƒCï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½wï¿½ï¿½ï¿½ï¿½ï¿½ßAï¿½Rï¿½[ï¿½hï¿½ï¿½Ç‚ñ‚¾‚ï¿½fï¿½oï¿½bï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½è‚·ï¿½ï¿½Û‚Éï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B
+- ï¿½á‚¦ï¿½ÎA`self.demand_planning()`ï¿½ï¿½`PSIPlannerApp`ï¿½Ìƒï¿½ï¿½\ï¿½bï¿½hï¿½ÅA`self`ï¿½ï¿½`PSIPlannerApp`ï¿½ÌƒCï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½wï¿½ï¿½ï¿½Bï¿½ï¿½ï¿½ï¿½A`calcPS2I4demand`ï¿½ï¿½`Node`ï¿½Nï¿½ï¿½ï¿½Xï¿½Ìƒï¿½ï¿½\ï¿½bï¿½hï¿½ÅA`self`ï¿½ï¿½`Node`ï¿½ÌƒCï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½wï¿½ï¿½ï¿½B
+- ï¿½ï¿½ï¿½Ì‚æ‚¤ï¿½ÈˆÙ‚È‚ï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½`self`ï¿½ï¿½ï¿½ï¿½ï¿½Ý‚ï¿½ï¿½ï¿½ÆAï¿½Ç‚ï¿½`self`ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½wï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ÇÕ‚ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ï‚µï¿½ï¿½ï¿½È‚ï¿½Aï¿½Rï¿½[ï¿½hï¿½Ì‰Â“Çï¿½ï¿½âƒï¿½ï¿½ï¿½eï¿½iï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½á‰ºï¿½ï¿½ï¿½ï¿½B
 
-#### ‰ðŒˆô
-ˆÈ‰º‚ÌƒAƒvƒ[ƒ`‚ÅA`self`‚Ì¬—‚ðŒyŒ¸‚µAƒR[ƒh‚Ì\‘¢‚ð®—‚·‚é‚±‚Æ‚ð’ñˆÄ‚µ‚Ü‚·F
+#### ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ï¿½È‰ï¿½ï¿½ÌƒAï¿½vï¿½ï¿½ï¿½[ï¿½`ï¿½ÅA`self`ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½yï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½Rï¿½[ï¿½hï¿½Ì\ï¿½ï¿½ï¿½ð®—ï¿½ï¿½ï¿½ï¿½é‚±ï¿½Æ‚ï¿½ï¿½Ä‚ï¿½ï¿½Ü‚ï¿½ï¿½F
 
-##### (1) ƒNƒ‰ƒX‚ÌÓ”C‚ð–¾Šm‚É•ª—£
-- **GUI‚ÆƒƒWƒbƒN‚Ì•ª—£**F`PSIPlannerApp`‚ÍGUI‚ÌŠÇ—iTkinter‚âMatplotlib‚Ì•`‰æAƒ†[ƒU[“ü—Í‚Ìˆ—j‚É“Á‰»‚³‚¹AŽÀÛ‚ÌŒv‰æƒƒWƒbƒNi`demand_planning`‚â`calcPS2I4demand`‚È‚Çj‚Í•Ê‚ÌƒNƒ‰ƒXi—áF`PlanningEngine`j‚ÉˆÚ“®‚·‚éB
-- **ƒf[ƒ^\‘¢‚ÆƒƒWƒbƒN‚Ì•ª—£**F`Node`ƒNƒ‰ƒX‚ÍƒcƒŠ[\‘¢‚âPSIƒf[ƒ^‚Ì•ÛŽ‚É“Á‰»‚³‚¹AŒvŽZƒƒWƒbƒNi`calcPS2I4demand`‚È‚Çj‚Í`PlanningEngine`‚â•Ê‚Ìƒ†[ƒeƒBƒŠƒeƒBƒ‚ƒWƒ…[ƒ‹‚ÉˆÚ‚·B
+##### (1) ï¿½Nï¿½ï¿½ï¿½Xï¿½ÌÓ”Cï¿½ð–¾Šmï¿½É•ï¿½ï¿½ï¿½
+- **GUIï¿½Æƒï¿½ï¿½Wï¿½bï¿½Nï¿½Ì•ï¿½ï¿½ï¿½**ï¿½F`PSIPlannerApp`ï¿½ï¿½GUIï¿½ÌŠÇ—ï¿½ï¿½iTkinterï¿½ï¿½Matplotlibï¿½Ì•`ï¿½ï¿½Aï¿½ï¿½ï¿½[ï¿½Uï¿½[ï¿½ï¿½ï¿½Í‚Ìï¿½ï¿½ï¿½ï¿½jï¿½É“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Û‚ÌŒvï¿½æƒï¿½Wï¿½bï¿½Nï¿½i`demand_planning`ï¿½ï¿½`calcPS2I4demand`ï¿½È‚Çjï¿½Í•Ê‚ÌƒNï¿½ï¿½ï¿½Xï¿½iï¿½ï¿½F`PlanningEngine`ï¿½jï¿½ÉˆÚ“ï¿½ï¿½ï¿½ï¿½ï¿½B
+- **ï¿½fï¿½[ï¿½^ï¿½\ï¿½ï¿½ï¿½Æƒï¿½ï¿½Wï¿½bï¿½Nï¿½Ì•ï¿½ï¿½ï¿½**ï¿½F`Node`ï¿½Nï¿½ï¿½ï¿½Xï¿½Íƒcï¿½ï¿½ï¿½[ï¿½\ï¿½ï¿½ï¿½ï¿½PSIï¿½fï¿½[ï¿½^ï¿½Ì•ÛŽï¿½ï¿½É“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½vï¿½Zï¿½ï¿½ï¿½Wï¿½bï¿½Nï¿½i`calcPS2I4demand`ï¿½È‚Çjï¿½ï¿½`PlanningEngine`ï¿½ï¿½Ê‚Ìƒï¿½ï¿½[ï¿½eï¿½Bï¿½ï¿½ï¿½eï¿½Bï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ÉˆÚ‚ï¿½ï¿½B
 
-—áF
+ï¿½ï¿½F
 ```python
 # planning_engine.py
 class PlanningEngine:
@@ -34,36 +34,36 @@ class PlanningEngine:
 
     def demand_planning(self):
         calc_all_psi2i4demand(self.root_node)
-        # ‘¼‚Ìˆ—i•]‰¿A•`‰æŽwŽ¦‚È‚Çj‚Í‚±‚±‚Å’²®
+        # ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½iï¿½]ï¿½ï¿½ï¿½Aï¿½`ï¿½ï¿½wï¿½ï¿½ï¿½È‚Çjï¿½Í‚ï¿½ï¿½ï¿½ï¿½Å’ï¿½ï¿½ï¿½
 
 # gui/app.py
 class PSIPlannerApp:
     def __init__(self, root, config):
         self.root = root
         self.config = config
-        self.engine = PlanningEngine(root_node_outbound)  # ƒGƒ“ƒWƒ“‚ð‰Šú‰»
+        self.engine = PlanningEngine(root_node_outbound)  # ï¿½Gï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
     def run_demand_planning(self):
-        self.engine.demand_planning()  # ƒGƒ“ƒWƒ“‚Éˆ—‚ðˆÏ÷
-        self.update_gui()  # GUIXV
+        self.engine.demand_planning()  # ï¿½Gï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½Éï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïï¿½
+        self.update_gui()  # GUIï¿½Xï¿½V
 
 # tree.py
 class Node:
     def __init__(self, name: str):
         self.name = name
         self.children = []
-        self.psi4demand = None  # ƒf[ƒ^•ÛŽ‚Ì‚Ý
+        self.psi4demand = None  # ï¿½fï¿½[ï¿½^ï¿½ÛŽï¿½ï¿½Ì‚ï¿½
 ```
 
-‚±‚Ì‚æ‚¤‚É‚·‚é‚±‚Æ‚ÅF
-- `PSIPlannerApp`‚ÍGUI‚ÌŠÇ—‚ÉW’†B
-- `PlanningEngine`‚ÍŒv‰æƒƒWƒbƒN‚ÌŽÀs‚ÉW’†B
-- `Node`‚Íƒf[ƒ^\‘¢‚Ì•ÛŽ‚ÉW’†B
-- `self`‚ªŽw‚·ƒCƒ“ƒXƒ^ƒ“ƒX‚ÌƒRƒ“ƒeƒLƒXƒg‚ª–¾Šm‚É‚È‚èA¬—‚ªŒ¸‚éB
+ï¿½ï¿½ï¿½Ì‚æ‚¤ï¿½É‚ï¿½ï¿½é‚±ï¿½Æ‚ÅF
+- `PSIPlannerApp`ï¿½ï¿½GUIï¿½ÌŠÇ—ï¿½ï¿½ÉWï¿½ï¿½ï¿½B
+- `PlanningEngine`ï¿½ÍŒvï¿½æƒï¿½Wï¿½bï¿½Nï¿½ÌŽï¿½ï¿½sï¿½ÉWï¿½ï¿½ï¿½B
+- `Node`ï¿½Íƒfï¿½[ï¿½^ï¿½\ï¿½ï¿½ï¿½Ì•ÛŽï¿½ï¿½ÉWï¿½ï¿½ï¿½B
+- `self`ï¿½ï¿½ï¿½wï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½ÌƒRï¿½ï¿½ï¿½eï¿½Lï¿½Xï¿½gï¿½ï¿½ï¿½ï¿½ï¿½mï¿½É‚È‚ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B
 
-##### (2) Ä‹Aˆ—‚Ì®—
-- Œ»Ý‚Ì`calc_all_psi2i4demand`‚ÍŠO•”ŠÖ”‚Æ‚µ‚Ä’è‹`‚³‚ê‚Ä‚¢‚Ü‚·‚ªA`Node`ƒNƒ‰ƒX‚É–§Ú‚ÉŠÖ˜A‚µ‚Ä‚¢‚é‚½‚ßAƒNƒ‰ƒXƒƒ\ƒbƒh‚Æ‚µ‚ÄŽÀ‘•‚·‚é‚©A`PlanningEngine`‚ÉˆÚ“®‚·‚é‚©‚ðŒŸ“¢‚µ‚Ü‚·B
-- Ä‹Aˆ—‚ðƒNƒ‰ƒXƒƒ\ƒbƒh‚Æ‚µ‚ÄŽÀ‘•‚·‚éê‡AˆÈ‰º‚Ì‚æ‚¤‚É‚Å‚«‚Ü‚·F
+##### (2) ï¿½Ä‹Aï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½
+- ï¿½ï¿½ï¿½Ý‚ï¿½`calc_all_psi2i4demand`ï¿½ÍŠOï¿½ï¿½ï¿½Öï¿½ï¿½Æ‚ï¿½ï¿½Ä’ï¿½`ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½ï¿½A`Node`ï¿½Nï¿½ï¿½ï¿½Xï¿½É–ï¿½ï¿½Ú‚ÉŠÖ˜Aï¿½ï¿½ï¿½Ä‚ï¿½ï¿½é‚½ï¿½ßAï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½Æ‚ï¿½ï¿½ÄŽï¿½ï¿½ï¿½ï¿½ï¿½ï¿½é‚©ï¿½A`PlanningEngine`ï¿½ÉˆÚ“ï¿½ï¿½ï¿½ï¿½é‚©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½B
+- ï¿½Ä‹Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½Æ‚ï¿½ï¿½ÄŽï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½Aï¿½È‰ï¿½ï¿½Ì‚æ‚¤ï¿½É‚Å‚ï¿½ï¿½Ü‚ï¿½ï¿½F
 
 ```python
 # tree.py
@@ -75,7 +75,7 @@ class Node:
             co = self.psi4demand[w][1]
             i0 = self.psi4demand[w - 1][2]
             p = self.psi4demand[w][3]
-            i1 = i0 + p - s  # ŠÈ—ª‰»‚µ‚½ŒvŽZ—á
+            i1 = i0 + p - s  # ï¿½È—ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Zï¿½ï¿½
             self.psi4demand[w][2] = i1
 
     def apply_psi2i4demand(self):
@@ -84,123 +84,123 @@ class Node:
             child.apply_psi2i4demand()
 ```
 
-- ‚±‚ê‚É‚æ‚èA`calc_all_psi2i4demand`‚Ì‚æ‚¤‚ÈŠO•”ŠÖ”‚ð”rœ‚µAƒcƒŠ[‚Ìƒgƒ‰ƒo[ƒTƒ‹‚ð`Node`ƒNƒ‰ƒX“à‚ÅŠ®Œ‹‚³‚¹‚é‚±‚Æ‚ª‚Å‚«‚Ü‚·B
+- ï¿½ï¿½ï¿½ï¿½É‚ï¿½ï¿½A`calc_all_psi2i4demand`ï¿½Ì‚æ‚¤ï¿½ÈŠOï¿½ï¿½ï¿½Öï¿½ï¿½ï¿½rï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½cï¿½ï¿½ï¿½[ï¿½Ìƒgï¿½ï¿½ï¿½oï¿½[ï¿½Tï¿½ï¿½ï¿½ï¿½`Node`ï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½ÅŠï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½é‚±ï¿½Æ‚ï¿½ï¿½Å‚ï¿½ï¿½Ü‚ï¿½ï¿½B
 
-##### (3) –¼‘O‹óŠÔ‚Ì®—
-- `self`‚Ì¬—‚ð–h‚®‚½‚ßA•Ï”–¼‚âƒƒ\ƒbƒh–¼‚ð‚æ‚è–¾Šm‚É‚·‚éB—á‚¦‚ÎA`self.root_node_outbound`‚ð`self.outbound_root`‚É•ÏX‚·‚é‚È‚ÇA–ðŠ„‚ªˆê–Ú‚Å‚í‚©‚é–¼‘O‚É‚·‚éB
-- ‚Ü‚½A`psi4demand`‚Ì‚æ‚¤‚È–¼‘O‚ÍAPSIiPlan, Supply, Inventoryj‚Ì‚Ç‚Ì•”•ª‚ðŽw‚·‚Ì‚©•s–¾Šm‚È‚Ì‚ÅA`demand_psi`‚â`supply_psi`‚Ì‚æ‚¤‚É–ðŠ„‚ð–¾Ž¦‚·‚é–¼‘O‚É•ÏX‚·‚éB
+##### (3) ï¿½ï¿½ï¿½Oï¿½ï¿½Ô‚Ìï¿½ï¿½ï¿½
+- `self`ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½ßAï¿½Ïï¿½ï¿½ï¿½ï¿½âƒï¿½\ï¿½bï¿½hï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è–¾ï¿½mï¿½É‚ï¿½ï¿½ï¿½Bï¿½á‚¦ï¿½ÎA`self.root_node_outbound`ï¿½ï¿½`self.outbound_root`ï¿½É•ÏXï¿½ï¿½ï¿½ï¿½È‚ÇAï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú‚Å‚í‚©ï¿½é–¼ï¿½Oï¿½É‚ï¿½ï¿½ï¿½B
+- ï¿½Ü‚ï¿½ï¿½A`psi4demand`ï¿½Ì‚æ‚¤ï¿½È–ï¿½ï¿½Oï¿½ÍAPSIï¿½iPlan, Supply, Inventoryï¿½jï¿½Ì‚Ç‚Ì•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½wï¿½ï¿½ï¿½Ì‚ï¿½ï¿½sï¿½ï¿½ï¿½mï¿½È‚Ì‚ÅA`demand_psi`ï¿½ï¿½`supply_psi`ï¿½Ì‚æ‚¤ï¿½É–ï¿½ï¿½ï¿½ï¿½ð–¾Žï¿½ï¿½ï¿½ï¿½é–¼ï¿½Oï¿½É•ÏXï¿½ï¿½ï¿½ï¿½B
 
 ---
 
-### 2. ƒNƒ‰ƒXƒƒ\ƒbƒh vs ŠO•”ŠÖ”‚Ì‘I‘ð
+### 2. ï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½\ï¿½bï¿½h vs ï¿½Oï¿½ï¿½ï¿½Öï¿½ï¿½Ì‘Iï¿½ï¿½
 
-#### –â‘è‚Ì®—
-- “¯‚¶‹@”\i—áF`calcPS2I4demand`j‚ðƒNƒ‰ƒXƒƒ\ƒbƒh‚Æ‚µ‚ÄŽÀ‘•‚·‚é‚©AŠO•”ŠÖ”‚Æ‚µ‚ÄŽÀ‘•‚·‚é‚©‚Å–À‚Á‚Ä‚¢‚éB
-- Python‚ÌŽd—lãAƒƒ‚ƒŠÁ”ï‚âˆ—‘¬“x‚É‚Ç‚Ì‚æ‚¤‚È‰e‹¿‚ª‚ ‚é‚Ì‚©’m‚è‚½‚¢B
+#### ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½
+- ï¿½ï¿½ï¿½ï¿½ï¿½@ï¿½\ï¿½iï¿½ï¿½F`calcPS2I4demand`ï¿½jï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½Æ‚ï¿½ï¿½ÄŽï¿½ï¿½ï¿½ï¿½ï¿½ï¿½é‚©ï¿½Aï¿½Oï¿½ï¿½ï¿½Öï¿½ï¿½Æ‚ï¿½ï¿½ÄŽï¿½ï¿½ï¿½ï¿½ï¿½ï¿½é‚©ï¿½Å–ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½B
+- Pythonï¿½ÌŽdï¿½lï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½âˆï¿½ï¿½ï¿½ï¿½ï¿½xï¿½É‚Ç‚Ì‚æ‚¤ï¿½È‰eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½mï¿½è‚½ï¿½ï¿½ï¿½B
 
-#### ƒNƒ‰ƒXƒƒ\ƒbƒh‚ÆŠO•”ŠÖ”‚Ì”äŠr
-ˆÈ‰º‚ÉA—¼ŽÒ‚Ìˆá‚¢‚ðPython‚ÌŽd—l‚ÉŠî‚Ã‚¢‚Ä”äŠr‚µ‚Ü‚·F
+#### ï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½ÆŠOï¿½ï¿½ï¿½Öï¿½ï¿½Ì”ï¿½r
+ï¿½È‰ï¿½ï¿½ÉAï¿½ï¿½ï¿½Ò‚Ìˆá‚¢ï¿½ï¿½Pythonï¿½ÌŽdï¿½lï¿½ÉŠï¿½Ã‚ï¿½ï¿½Ä”ï¿½rï¿½ï¿½ï¿½Ü‚ï¿½ï¿½F
 
-##### (1) ƒNƒ‰ƒXƒƒ\ƒbƒh
-- **ƒƒŠƒbƒg**F
-  - ƒNƒ‰ƒX‚É–§Ú‚ÉŠÖ˜A‚·‚éƒƒWƒbƒN‚ðƒJƒvƒZƒ‹‰»‚Å‚«‚éiƒIƒuƒWƒFƒNƒgŽwŒü‚ÌŒ´‘¥‚É“K‡jB
-  - `self`‚ð’Ê‚¶‚ÄƒCƒ“ƒXƒ^ƒ“ƒX‚Ìó‘Ôi—áF`self.psi4demand`j‚É’¼ÚƒAƒNƒZƒX‰Â”\B
-  - ƒR[ƒh‚ÌƒRƒ“ƒeƒLƒXƒg‚ª–¾Šmi‚Ç‚ÌƒNƒ‰ƒX‚É‘®‚·‚é‚©‚ªˆê–Ú—Ä‘RjB
-- **ƒfƒƒŠƒbƒg**F
-  - ƒCƒ“ƒXƒ^ƒ“ƒX‚ð“n‚·•K—v‚ª‚ ‚éi—áF`node.calcPS2I4demand()`jB
-  - ƒNƒ‰ƒX‚ÉˆË‘¶‚·‚é‚½‚ßA”Ä—p«‚ª’á‚¢i‘¼‚ÌƒNƒ‰ƒX‚âƒRƒ“ƒeƒLƒXƒg‚ÅÄ—˜—p‚µ‚É‚­‚¢jB
-- **ƒƒ‚ƒŠ‚Æ‘¬“x**F
-  - ƒƒ\ƒbƒh‚ÍƒNƒ‰ƒX’è‹`‚Ìˆê•”‚Æ‚µ‚Ä•Û‘¶‚³‚ê‚é‚ªAƒCƒ“ƒXƒ^ƒ“ƒX‚²‚Æ‚Éƒƒ\ƒbƒh‚ÌƒRƒs[‚Íì¬‚³‚ê‚È‚¢iƒNƒ‰ƒXƒŒƒxƒ‹‚Å‹¤—LjB
-  - ŒÄ‚Ño‚µŽž‚É`self`‚ð“n‚·ƒI[ƒo[ƒwƒbƒh‚ª‚ ‚é‚ªAPython‚Ì’Êí‚Ìƒ†[ƒXƒP[ƒX‚Å‚Í–³Ž‹‚Å‚«‚éƒŒƒxƒ‹B
+##### (1) ï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½\ï¿½bï¿½h
+- **ï¿½ï¿½ï¿½ï¿½ï¿½bï¿½g**ï¿½F
+  - ï¿½Nï¿½ï¿½ï¿½Xï¿½É–ï¿½ï¿½Ú‚ÉŠÖ˜Aï¿½ï¿½ï¿½éƒï¿½Wï¿½bï¿½Nï¿½ï¿½ï¿½Jï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½ï¿½Å‚ï¿½ï¿½ï¿½iï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½wï¿½ï¿½ï¿½ÌŒï¿½ï¿½ï¿½ï¿½É“Kï¿½ï¿½ï¿½jï¿½B
+  - `self`ï¿½ï¿½Ê‚ï¿½ï¿½ÄƒCï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½Ìï¿½Ôiï¿½ï¿½F`self.psi4demand`ï¿½jï¿½É’ï¿½ï¿½ÚƒAï¿½Nï¿½Zï¿½Xï¿½Â”\ï¿½B
+  - ï¿½Rï¿½[ï¿½hï¿½ÌƒRï¿½ï¿½ï¿½eï¿½Lï¿½Xï¿½gï¿½ï¿½ï¿½ï¿½ï¿½mï¿½iï¿½Ç‚ÌƒNï¿½ï¿½ï¿½Xï¿½É‘ï¿½ï¿½ï¿½ï¿½é‚©ï¿½ï¿½ï¿½ï¿½Ú—Ä‘Rï¿½jï¿½B
+- **ï¿½fï¿½ï¿½ï¿½ï¿½ï¿½bï¿½g**ï¿½F
+  - ï¿½Cï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½ï¿½nï¿½ï¿½ï¿½Kï¿½vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½F`node.calcPS2I4demand()`ï¿½jï¿½B
+  - ï¿½Nï¿½ï¿½ï¿½Xï¿½ÉˆË‘ï¿½ï¿½ï¿½ï¿½é‚½ï¿½ßAï¿½Ä—pï¿½ï¿½ï¿½ï¿½ï¿½á‚¢ï¿½iï¿½ï¿½ï¿½ÌƒNï¿½ï¿½ï¿½Xï¿½ï¿½Rï¿½ï¿½ï¿½eï¿½Lï¿½Xï¿½gï¿½ÅÄ—ï¿½ï¿½pï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½ï¿½jï¿½B
+- **ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‘ï¿½ï¿½x**ï¿½F
+  - ï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½ÍƒNï¿½ï¿½ï¿½Xï¿½ï¿½`ï¿½Ìˆê•”ï¿½Æ‚ï¿½ï¿½Ä•Û‘ï¿½ï¿½ï¿½ï¿½ï¿½é‚ªï¿½Aï¿½Cï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½Æ‚Éƒï¿½ï¿½\ï¿½bï¿½hï¿½ÌƒRï¿½sï¿½[ï¿½Íì¬ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½iï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½xï¿½ï¿½ï¿½Å‹ï¿½ï¿½Lï¿½jï¿½B
+  - ï¿½Ä‚Ñoï¿½ï¿½ï¿½ï¿½ï¿½ï¿½`self`ï¿½ï¿½nï¿½ï¿½ï¿½Iï¿½[ï¿½oï¿½[ï¿½wï¿½bï¿½hï¿½ï¿½ï¿½ï¿½ï¿½é‚ªï¿½APythonï¿½Ì’Êï¿½Ìƒï¿½ï¿½[ï¿½Xï¿½Pï¿½[ï¿½Xï¿½Å‚Í–ï¿½ï¿½ï¿½ï¿½Å‚ï¿½ï¿½éƒŒï¿½xï¿½ï¿½ï¿½B
 
-##### (2) ŠO•”ŠÖ”
-- **ƒƒŠƒbƒg**F
-  - ”Ä—p«‚ª‚‚¢i‚Ç‚ÌƒNƒ‰ƒX‚É‚àˆË‘¶‚¹‚¸A”CˆÓ‚ÌƒIƒuƒWƒFƒNƒg‚É“K—p‰Â”\jB
-  - ƒ‚ƒWƒ…[ƒ‹‰»‚µ‚â‚·‚¢iƒ†[ƒeƒBƒŠƒeƒBƒ‚ƒWƒ…[ƒ‹‚É‚Ü‚Æ‚ß‚ÄÄ—˜—p‰Â”\jB
-  - ƒVƒ“ƒvƒ‹‚Èˆ—‚Å‚Í‹Lq—Ê‚ª­‚È‚¢B
-- **ƒfƒƒŠƒbƒg**F
-  - ó‘Ô‚ð’¼Ú‘€ì‚Å‚«‚È‚¢‚½‚ßAˆø”‚Åƒf[ƒ^‚ð–¾Ž¦“I‚É“n‚·•K—v‚ª‚ ‚éi—áF`calc_all_psi2i4demand(node)`jB
-  - ƒR[ƒh‚ÌƒRƒ“ƒeƒLƒXƒg‚ª•s–¾Šm‚É‚È‚è‚â‚·‚¢i‚Ç‚ÌƒNƒ‰ƒX‚âƒf[ƒ^\‘¢‚ÉˆË‘¶‚·‚é‚Ì‚©‚í‚©‚è‚É‚­‚¢jB
-- **ƒƒ‚ƒŠ‚Æ‘¬“x**F
-  - ŠÖ”‚Íƒ‚ƒWƒ…[ƒ‹ƒŒƒxƒ‹‚Å’è‹`‚³‚êAƒCƒ“ƒXƒ^ƒ“ƒX‚ÉˆË‘¶‚µ‚È‚¢‚½‚ßAƒƒ‚ƒŠÁ”ï‚Í‚Ù‚Ú“¯“™B
-  - ŒÄ‚Ño‚µŽž‚ÌƒI[ƒo[ƒwƒbƒh‚ÍƒNƒ‰ƒXƒƒ\ƒbƒh‚Æ‚Ù‚Ú“¯‚¶iPython‚ÌŠÖ”ŒÄ‚Ño‚µƒRƒXƒg‚Í’á‚¢jB
+##### (2) ï¿½Oï¿½ï¿½ï¿½Öï¿½
+- **ï¿½ï¿½ï¿½ï¿½ï¿½bï¿½g**ï¿½F
+  - ï¿½Ä—pï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½Ç‚ÌƒNï¿½ï¿½ï¿½Xï¿½É‚ï¿½ï¿½Ë‘ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½Cï¿½Ó‚ÌƒIï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½É“Kï¿½pï¿½Â”\ï¿½jï¿½B
+  - ï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â‚·ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½[ï¿½eï¿½Bï¿½ï¿½ï¿½eï¿½Bï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½É‚Ü‚Æ‚ß‚ÄÄ—ï¿½ï¿½pï¿½Â”\ï¿½jï¿½B
+  - ï¿½Vï¿½ï¿½ï¿½vï¿½ï¿½ï¿½Èï¿½ï¿½ï¿½ï¿½Å‚Í‹Lï¿½qï¿½Ê‚ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½B
+- **ï¿½fï¿½ï¿½ï¿½ï¿½ï¿½bï¿½g**ï¿½F
+  - ï¿½ï¿½Ô‚ð’¼Ú‘ï¿½ï¿½ï¿½Å‚ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ßAï¿½ï¿½ï¿½ï¿½ï¿½Åƒfï¿½[ï¿½^ï¿½ð–¾Žï¿½ï¿½Iï¿½É“nï¿½ï¿½ï¿½Kï¿½vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½F`calc_all_psi2i4demand(node)`ï¿½jï¿½B
+  - ï¿½Rï¿½[ï¿½hï¿½ÌƒRï¿½ï¿½ï¿½eï¿½Lï¿½Xï¿½gï¿½ï¿½ï¿½sï¿½ï¿½ï¿½mï¿½É‚È‚ï¿½â‚·ï¿½ï¿½ï¿½iï¿½Ç‚ÌƒNï¿½ï¿½ï¿½Xï¿½ï¿½fï¿½[ï¿½^ï¿½\ï¿½ï¿½ï¿½ÉˆË‘ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½í‚©ï¿½ï¿½É‚ï¿½ï¿½ï¿½ï¿½jï¿½B
+- **ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‘ï¿½ï¿½x**ï¿½F
+  - ï¿½Öï¿½ï¿½Íƒï¿½ï¿½Wï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½xï¿½ï¿½ï¿½Å’ï¿½`ï¿½ï¿½ï¿½ï¿½Aï¿½Cï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½ÉˆË‘ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ßAï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í‚Ù‚Ú“ï¿½ï¿½ï¿½ï¿½B
+  - ï¿½Ä‚Ñoï¿½ï¿½ï¿½ï¿½ï¿½ÌƒIï¿½[ï¿½oï¿½[ï¿½wï¿½bï¿½hï¿½ÍƒNï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½Æ‚Ù‚Ú“ï¿½ï¿½ï¿½ï¿½iPythonï¿½ÌŠÖï¿½ï¿½Ä‚Ñoï¿½ï¿½ï¿½Rï¿½Xï¿½gï¿½Í’á‚¢ï¿½jï¿½B
 
-##### Python‚ÌŽd—l‚ÉŠî‚Ã‚­‰e‹¿
-- **ƒƒ‚ƒŠÁ”ï**FƒNƒ‰ƒXƒƒ\ƒbƒh‚àŠO•”ŠÖ”‚àAPython‚ÌƒIƒuƒWƒFƒNƒgƒ‚ƒfƒ‹‚Å‚Í‘å‚«‚È·‚Í‚È‚¢B‚Ç‚¿‚ç‚àƒR[ƒhƒIƒuƒWƒFƒNƒg‚Æ‚µ‚Äƒƒ‚ƒŠ‚É•Û‘¶‚³‚êAŒÄ‚Ño‚µŽž‚É“®“I‚É‰ðŒˆ‚³‚ê‚éBƒCƒ“ƒXƒ^ƒ“ƒX•Ï”i—áF`self.psi4demand`j‚Ìƒƒ‚ƒŠÁ”ï‚ÍA‚Ç‚¿‚ç‚ð‘I‚ñ‚Å‚à•Ï‚í‚ç‚È‚¢B
-- **ˆ—‘¬“x**FƒNƒ‰ƒXƒƒ\ƒbƒh‚Ì`self`‰ðŒˆ‚âƒƒ\ƒbƒhƒfƒBƒXƒpƒbƒ`‚ÌƒI[ƒo[ƒwƒbƒh‚Í”÷¬iƒiƒm•bƒI[ƒ_[jBŠO•”ŠÖ”‚Ìˆø”“n‚µ‚à“¯—l‚ÉŒy—ÊB7,000ƒXƒeƒbƒv‚ÌƒR[ƒhƒx[ƒX‚Å‚ÍA‘¼‚Ì—vˆöi—áFƒ‹[ƒv‚ÌŒø—¦Aƒf[ƒ^\‘¢‚Ì‘I‘ðj‚ª‘¬“x‚É‘å‚«‚­‰e‹¿‚·‚éB
-- **ƒƒ“ƒeƒiƒ“ƒX«**FƒNƒ‰ƒXƒƒ\ƒbƒh‚ÍŠÖ˜A‚·‚éƒf[ƒ^‚ÆƒƒWƒbƒN‚ð‚Ü‚Æ‚ß‚é‚½‚ßA‘å‹K–ÍƒvƒƒWƒFƒNƒg‚Å‚Í‰Â“Ç«‚Æ•ÛŽç«‚ªŒüã‚·‚éBŠO•”ŠÖ”‚Íƒ†[ƒeƒBƒŠƒeƒBŠÖ”‚Æ‚µ‚Ä“KØ‚¾‚ªAó‘ÔŠÇ—‚ª•ªŽU‚µ‚â‚·‚­AƒoƒO‚ÌŒ´ˆö‚É‚È‚è“¾‚éB
+##### Pythonï¿½ÌŽdï¿½lï¿½ÉŠï¿½Ã‚ï¿½ï¿½eï¿½ï¿½
+- **ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½**ï¿½Fï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Öï¿½ï¿½ï¿½ï¿½APythonï¿½ÌƒIï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½fï¿½ï¿½ï¿½Å‚Í‘å‚«ï¿½Èï¿½ï¿½Í‚È‚ï¿½ï¿½Bï¿½Ç‚ï¿½ï¿½ï¿½ï¿½ï¿½Rï¿½[ï¿½hï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½Æ‚ï¿½ï¿½Äƒï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É•Û‘ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½Ä‚Ñoï¿½ï¿½ï¿½ï¿½ï¿½É“ï¿½ï¿½Iï¿½É‰ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Bï¿½Cï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½Ïï¿½ï¿½iï¿½ï¿½F`self.psi4demand`ï¿½jï¿½Ìƒï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÍAï¿½Ç‚ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½Å‚ï¿½ï¿½Ï‚ï¿½ï¿½È‚ï¿½ï¿½B
+- **ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½x**ï¿½Fï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½ï¿½`self`ï¿½ï¿½ï¿½ï¿½ï¿½âƒï¿½\ï¿½bï¿½hï¿½fï¿½Bï¿½Xï¿½pï¿½bï¿½`ï¿½ÌƒIï¿½[ï¿½oï¿½[ï¿½wï¿½bï¿½hï¿½Í”ï¿½ï¿½ï¿½ï¿½iï¿½iï¿½mï¿½bï¿½Iï¿½[ï¿½_ï¿½[ï¿½jï¿½Bï¿½Oï¿½ï¿½ï¿½Öï¿½ï¿½Ìˆï¿½ï¿½ï¿½ï¿½nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½lï¿½ÉŒyï¿½ÊB7,000ï¿½Xï¿½eï¿½bï¿½vï¿½ÌƒRï¿½[ï¿½hï¿½xï¿½[ï¿½Xï¿½Å‚ÍAï¿½ï¿½ï¿½Ì—vï¿½ï¿½ï¿½iï¿½ï¿½Fï¿½ï¿½ï¿½[ï¿½vï¿½ÌŒï¿½ï¿½ï¿½ï¿½Aï¿½fï¿½[ï¿½^ï¿½\ï¿½ï¿½ï¿½Ì‘Iï¿½ï¿½ï¿½jï¿½ï¿½ï¿½ï¿½ï¿½xï¿½É‘å‚«ï¿½ï¿½ï¿½eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B
+- **ï¿½ï¿½ï¿½ï¿½ï¿½eï¿½iï¿½ï¿½ï¿½Xï¿½ï¿½**ï¿½Fï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½ÍŠÖ˜Aï¿½ï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½Æƒï¿½ï¿½Wï¿½bï¿½Nï¿½ï¿½ï¿½Ü‚Æ‚ß‚é‚½ï¿½ßAï¿½ï¿½Kï¿½Íƒvï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½Å‚Í‰Â“Çï¿½ï¿½Æ•ÛŽç«ï¿½ï¿½ï¿½ï¿½ï¿½ã‚·ï¿½ï¿½Bï¿½Oï¿½ï¿½ï¿½Öï¿½ï¿½Íƒï¿½ï¿½[ï¿½eï¿½Bï¿½ï¿½ï¿½eï¿½Bï¿½Öï¿½ï¿½Æ‚ï¿½ï¿½Ä“Kï¿½Ø‚ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ÔŠÇ—ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½â‚·ï¿½ï¿½ï¿½Aï¿½oï¿½Oï¿½ÌŒï¿½ï¿½ï¿½ï¿½É‚È‚è“¾ï¿½ï¿½B
 
-#### „§
-ˆÈ‰º‚ÌƒKƒCƒhƒ‰ƒCƒ“‚ÅŽÀ‘••û–@‚ð‘I‚Ô‚±‚Æ‚ð‚¨Š©‚ß‚µ‚Ü‚·F
-- **ƒNƒ‰ƒXƒƒ\ƒbƒh‚ð‘I‚Ôê‡**F
-  - ƒƒWƒbƒN‚ª“Á’è‚ÌƒNƒ‰ƒXi—áF`Node`j‚Ìó‘Ô‚É‹­‚­ˆË‘¶‚·‚éê‡B
-  - ƒIƒuƒWƒFƒNƒgŽwŒü‚ÌÝŒv‚ðdŽ‹‚µAƒf[ƒ^‚ÆU‚é•‘‚¢‚ðƒJƒvƒZƒ‹‰»‚µ‚½‚¢ê‡B
-  - —áF`Node.calc_psi2i4demand`‚Í`Node`‚Ì`psi4demand`‚ð’¼Ú‘€ì‚·‚é‚½‚ßAƒNƒ‰ƒXƒƒ\ƒbƒh‚ªŽ©‘RB
-- **ŠO•”ŠÖ”‚ð‘I‚Ôê‡**F
-  - ƒƒWƒbƒN‚ª”Ä—p“I‚ÅA•¡”‚ÌƒNƒ‰ƒX‚âƒRƒ“ƒeƒLƒXƒg‚ÅÄ—˜—p‰Â”\‚Èê‡B
-  - ó‘Ô‚ð•ÏX‚¹‚¸Aƒˆ‚ÈŒvŽZ‚â•ÏŠ·‚ðs‚¤ê‡B
-  - —áF`calc_all_psi2i4demand`‚ÍƒcƒŠ[‚Ìƒgƒ‰ƒo[ƒTƒ‹‚ð”Ä—p“I‚És‚¤‚È‚çAƒ†[ƒeƒBƒŠƒeƒBŠÖ”‚Æ‚µ‚ÄŽÀ‘•‰Â”\B
+#### ï¿½ï¿½ï¿½ï¿½
+ï¿½È‰ï¿½ï¿½ÌƒKï¿½Cï¿½hï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ÅŽï¿½ï¿½ï¿½ï¿½ï¿½ï¿½@ï¿½ï¿½Iï¿½Ô‚ï¿½ï¿½Æ‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½ï¿½Ü‚ï¿½ï¿½F
+- **ï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½ï¿½Iï¿½Ôê‡**ï¿½F
+  - ï¿½ï¿½ï¿½Wï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÌƒNï¿½ï¿½ï¿½Xï¿½iï¿½ï¿½F`Node`ï¿½jï¿½Ìï¿½Ô‚É‹ï¿½ï¿½ï¿½ï¿½Ë‘ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½B
+  - ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½wï¿½ï¿½ï¿½ÌÝŒvï¿½ï¿½ï¿½dï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½fï¿½[ï¿½^ï¿½ÆUï¿½é•‘ï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½B
+  - ï¿½ï¿½F`Node.calc_psi2i4demand`ï¿½ï¿½`Node`ï¿½ï¿½`psi4demand`ï¿½ð’¼Ú‘ï¿½ï¿½ì‚·ï¿½é‚½ï¿½ßAï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½ï¿½ï¿½ï¿½ï¿½Rï¿½B
+- **ï¿½Oï¿½ï¿½ï¿½Öï¿½ï¿½ï¿½Iï¿½Ôê‡**ï¿½F
+  - ï¿½ï¿½ï¿½Wï¿½bï¿½Nï¿½ï¿½ï¿½Ä—pï¿½Iï¿½ÅAï¿½ï¿½ï¿½ï¿½ï¿½ÌƒNï¿½ï¿½ï¿½Xï¿½ï¿½Rï¿½ï¿½ï¿½eï¿½Lï¿½Xï¿½gï¿½ÅÄ—ï¿½ï¿½pï¿½Â”\ï¿½Èê‡ï¿½B
+  - ï¿½ï¿½Ô‚ï¿½ÏXï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ÈŒvï¿½Zï¿½ï¿½ÏŠï¿½ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½ê‡ï¿½B
+  - ï¿½ï¿½F`calc_all_psi2i4demand`ï¿½Íƒcï¿½ï¿½ï¿½[ï¿½Ìƒgï¿½ï¿½ï¿½oï¿½[ï¿½Tï¿½ï¿½ï¿½ï¿½Ä—pï¿½Iï¿½Ésï¿½ï¿½ï¿½È‚ï¿½Aï¿½ï¿½ï¿½[ï¿½eï¿½Bï¿½ï¿½ï¿½eï¿½Bï¿½Öï¿½ï¿½Æ‚ï¿½ï¿½ÄŽï¿½ï¿½ï¿½ï¿½Â”\ï¿½B
 
-‹ï‘Ì—áF
+ï¿½ï¿½Ì—ï¿½F
 ```python
-# utils.pyiŠO•”ŠÖ”‚Æ‚µ‚ÄŽÀ‘•j
+# utils.pyï¿½iï¿½Oï¿½ï¿½ï¿½Öï¿½ï¿½Æ‚ï¿½ï¿½ÄŽï¿½ï¿½ï¿½ï¿½j
 def traverse_and_calc_psi(node):
     node.calc_psi2i4demand()
     for child in node.children:
         traverse_and_calc_psi(child)
 
-# tree.pyiƒNƒ‰ƒXƒƒ\ƒbƒh‚Æ‚µ‚ÄŽÀ‘•j
+# tree.pyï¿½iï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½Æ‚ï¿½ï¿½ÄŽï¿½ï¿½ï¿½ï¿½j
 class Node:
     def calc_psi2i4demand(self):
-        # Šù‘¶‚ÌƒƒWƒbƒN
+        # ï¿½ï¿½ï¿½ï¿½ï¿½Ìƒï¿½ï¿½Wï¿½bï¿½N
         plan_len = 53 * self.plan_range
         for w in range(1, plan_len):
             # ...
 ```
 
-‚±‚Ìê‡Aƒgƒ‰ƒo[ƒTƒ‹ƒƒWƒbƒN‚Í`utils.py`‚ÌŠO•”ŠÖ”‚Æ‚µ‚Ä•ª—£‚µAŒÂX‚Ìƒm[ƒh‚ÌŒvŽZ‚Í`Node`‚ÌƒNƒ‰ƒXƒƒ\ƒbƒh‚Æ‚µ‚Ä•ÛŽ‚·‚é•û‚ªA–ðŠ„‚ª–¾Šm‚ÅÄ—˜—p«‚ª‚‚¢‚Å‚·B
+ï¿½ï¿½ï¿½Ìê‡ï¿½Aï¿½gï¿½ï¿½ï¿½oï¿½[ï¿½Tï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½bï¿½Nï¿½ï¿½`utils.py`ï¿½ÌŠOï¿½ï¿½ï¿½Öï¿½ï¿½Æ‚ï¿½ï¿½Ä•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ÂXï¿½Ìƒmï¿½[ï¿½hï¿½ÌŒvï¿½Zï¿½ï¿½`Node`ï¿½ÌƒNï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½Æ‚ï¿½ï¿½Ä•ÛŽï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mï¿½ÅÄ—ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å‚ï¿½ï¿½B
 
 ---
 
-### 3. ƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒO‚Ì•ûŒü«
+### 3. ï¿½ï¿½ï¿½tï¿½@ï¿½Nï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½Ì•ï¿½ï¿½ï¿½ï¿½ï¿½
 
-#### ‘S‘Ì‚Ì–Ú•W
-- **Œ©’Ê‚µ‚Ì—Ç‚³**FƒR[ƒh‚Ì–ðŠ„‚ð–¾Šm‚É‚µAŠÖ”‚âƒNƒ‰ƒX‚ÌÓ”C‚ð’Pˆê‰»B
-- **Ä—˜—p«**FƒƒWƒbƒN‚ðƒ‚ƒWƒ…[ƒ‹‰»‚µA‘¼‚ÌƒvƒƒWƒFƒNƒg‚â‹@”\‚ÅŽg‚¢‚â‚·‚­‚·‚éB
-- **•ÛŽç«**FƒRƒƒ“ƒg‚âƒhƒLƒ…ƒƒ“ƒg‚ð[ŽÀ‚³‚¹AƒfƒoƒbƒO‚ð—eˆÕ‚É‚·‚éB
+#### ï¿½Sï¿½Ì‚Ì–Ú•W
+- **ï¿½ï¿½ï¿½Ê‚ï¿½ï¿½Ì—Ç‚ï¿½**ï¿½Fï¿½Rï¿½[ï¿½hï¿½Ì–ï¿½ï¿½ï¿½ï¿½ð–¾Šmï¿½É‚ï¿½ï¿½Aï¿½Öï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½Xï¿½ÌÓ”Cï¿½ï¿½Pï¿½ê‰»ï¿½B
+- **ï¿½Ä—ï¿½ï¿½pï¿½ï¿½**ï¿½Fï¿½ï¿½ï¿½Wï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Ìƒvï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½@ï¿½\ï¿½ÅŽgï¿½ï¿½ï¿½â‚·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B
+- **ï¿½ÛŽç«**ï¿½Fï¿½Rï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½hï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½fï¿½oï¿½bï¿½Oï¿½ï¿½eï¿½Õ‚É‚ï¿½ï¿½ï¿½B
 
-#### ‹ï‘Ì“I‚ÈƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒOˆÄ
-1. **ƒ‚ƒWƒ…[ƒ‹•ªŠ„**F
-   - Œ»Ý‚ÌƒR[ƒh‚ðˆÈ‰º‚Ì‚æ‚¤‚É•ªŠ„‚·‚éF
-     - `gui/`FGUIŠÖ˜Ai`app.py`j
-     - `engine/`FŒv‰æƒƒWƒbƒNi`planning_engine.py`j
-     - `model/`Fƒf[ƒ^\‘¢i`tree.py`j
-     - `utils/`F”Ä—pƒ†[ƒeƒBƒŠƒeƒBi`utils.py`j
-   - —áF
+#### ï¿½ï¿½Ì“Iï¿½Èƒï¿½ï¿½tï¿½@ï¿½Nï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½ï¿½
+1. **ï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½**ï¿½F
+   - ï¿½ï¿½ï¿½Ý‚ÌƒRï¿½[ï¿½hï¿½ï¿½ï¿½È‰ï¿½ï¿½Ì‚æ‚¤ï¿½É•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½F
+     - `gui/`ï¿½FGUIï¿½Ö˜Aï¿½i`app.py`ï¿½j
+     - `engine/`ï¿½Fï¿½vï¿½æƒï¿½Wï¿½bï¿½Nï¿½i`planning_engine.py`ï¿½j
+     - `model/`ï¿½Fï¿½fï¿½[ï¿½^ï¿½\ï¿½ï¿½ï¿½i`tree.py`ï¿½j
+     - `utils/`ï¿½Fï¿½Ä—pï¿½ï¿½ï¿½[ï¿½eï¿½Bï¿½ï¿½ï¿½eï¿½Bï¿½i`utils.py`ï¿½j
+   - ï¿½ï¿½F
      ```
      project/
-     „¥„Ÿ„Ÿ gui/
-     „    „¤„Ÿ„Ÿ app.py
-     „¥„Ÿ„Ÿ engine/
-     „    „¤„Ÿ„Ÿ planning_engine.py
-     „¥„Ÿ„Ÿ model/
-     „    „¤„Ÿ„Ÿ tree.py
-     „¥„Ÿ„Ÿ utils/
-     „    „¤„Ÿ„Ÿ utils.py
-     „¤„Ÿ„Ÿ main.py
+     ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ gui/
+     ï¿½ï¿½   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ app.py
+     ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ engine/
+     ï¿½ï¿½   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ planning_engine.py
+     ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ model/
+     ï¿½ï¿½   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ tree.py
+     ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ utils/
+     ï¿½ï¿½   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ utils.py
+     ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ main.py
      ```
 
-2. **ˆË‘¶ŠÖŒW‚Ì®—**F
-   - `PSIPlannerApp`‚ª`Node`‚âŒv‰æƒƒWƒbƒN‚É’¼ÚˆË‘¶‚µ‚È‚¢‚æ‚¤‚ÉA`PlanningEngine`‚ð’‡‰îŽÒ‚Æ‚µ‚ÄŽg—pB
-   - ˆË‘¶’“üiDependency Injectionj‚ð—˜—p‚µ‚ÄAÝ’è‚âƒf[ƒ^‚ð–¾Ž¦“I‚É“n‚·B
+2. **ï¿½Ë‘ï¿½ï¿½ÖŒWï¿½Ìï¿½ï¿½ï¿½**ï¿½F
+   - `PSIPlannerApp`ï¿½ï¿½`Node`ï¿½ï¿½vï¿½æƒï¿½Wï¿½bï¿½Nï¿½É’ï¿½ï¿½ÚˆË‘ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½æ‚¤ï¿½ÉA`PlanningEngine`ï¿½ð’‡‰ï¿½Ò‚Æ‚ï¿½ï¿½ÄŽgï¿½pï¿½B
+   - ï¿½Ë‘ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iDependency Injectionï¿½jï¿½ð—˜—pï¿½ï¿½ï¿½ÄAï¿½Ý’ï¿½ï¿½fï¿½[ï¿½^ï¿½ð–¾Žï¿½ï¿½Iï¿½É“nï¿½ï¿½ï¿½B
 
-3. **–½–¼‹K‘¥‚Ì“ˆê**F
-   - ŠÖ”–¼‚â•Ï”–¼‚ðPEP 8‚É€‹’‚³‚¹‚éi—áF`calcPS2I4demand` ¨ `calc_psi_to_inventory_for_demand`jB
-   - PSI‚Ì–ðŠ„iPlan, Supply, Inventoryj‚ð–¾Šm‚É‚·‚é–½–¼‚ðÌ—pB
+3. **ï¿½ï¿½ï¿½ï¿½ï¿½Kï¿½ï¿½ï¿½Ì“ï¿½ï¿½ï¿½**ï¿½F
+   - ï¿½Öï¿½ï¿½ï¿½ï¿½ï¿½Ïï¿½ï¿½ï¿½ï¿½ï¿½PEP 8ï¿½Éï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½F`calcPS2I4demand` ï¿½ï¿½ `calc_psi_to_inventory_for_demand`ï¿½jï¿½B
+   - PSIï¿½Ì–ï¿½ï¿½ï¿½ï¿½iPlan, Supply, Inventoryï¿½jï¿½ð–¾Šmï¿½É‚ï¿½ï¿½é–½ï¿½ï¿½ï¿½ï¿½ï¿½Ì—pï¿½B
 
-4. **ƒRƒƒ“ƒg‚ÆƒhƒLƒ…ƒƒ“ƒg‚Ì[ŽÀ**F
-   - ŠeŠÖ”‚âƒƒ\ƒbƒh‚ÉDocstring‚ð’Ç‰ÁB
-   - —áF
+4. **ï¿½Rï¿½ï¿½ï¿½ï¿½ï¿½gï¿½Æƒhï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½gï¿½Ì[ï¿½ï¿½**ï¿½F
+   - ï¿½eï¿½Öï¿½ï¿½âƒï¿½\ï¿½bï¿½hï¿½ï¿½Docstringï¿½ï¿½Ç‰ï¿½ï¿½B
+   - ï¿½ï¿½F
      ```python
      def calc_psi2i4demand(self):
          """
@@ -211,9 +211,9 @@ class Node:
          # ...
      ```
 
-5. **ƒpƒtƒH[ƒ}ƒ“ƒXÅ“K‰»**F
-   - ƒŠƒXƒg‘€ìi—áF`diff_list = [x for x in work if x not in s]`j‚ÍAƒf[ƒ^—Ê‚ª‘½‚¢ê‡‚É”ñŒø—¦BƒZƒbƒg‘€ìi`set(work) - set(s)`j‚âNumPy‚ðŽg—p‚·‚éB
-   - —áF
+5. **ï¿½pï¿½tï¿½Hï¿½[ï¿½}ï¿½ï¿½ï¿½Xï¿½Å“Kï¿½ï¿½**ï¿½F
+   - ï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½ï¿½iï¿½ï¿½F`diff_list = [x for x in work if x not in s]`ï¿½jï¿½ÍAï¿½fï¿½[ï¿½^ï¿½Ê‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½É”ï¿½ï¿½ï¿½ï¿½ï¿½Bï¿½Zï¿½bï¿½gï¿½ï¿½ï¿½ï¿½i`set(work) - set(s)`ï¿½jï¿½ï¿½NumPyï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½ï¿½B
+   - ï¿½ï¿½F
      ```python
      import numpy as np
 
@@ -226,32 +226,32 @@ class Node:
          self.psi4demand = psi.tolist()
      ```
 
-6. **ƒeƒXƒg‚Ì“±“ü**F
-   - ƒƒWƒbƒN‚²‚Æ‚É’P‘ÌƒeƒXƒg‚ð‘‚«AƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒOŒã‚à“®ì‚ª•ÛØ‚³‚ê‚é‚æ‚¤‚É‚·‚éB
-   - —áF`unittest`‚â`pytest`‚ðŽg—p‚µ‚ÄA`calc_psi2i4demand`‚ÌŒ‹‰Ê‚ðŒŸØB
+6. **ï¿½eï¿½Xï¿½gï¿½Ì“ï¿½ï¿½ï¿½**ï¿½F
+   - ï¿½ï¿½ï¿½Wï¿½bï¿½Nï¿½ï¿½ï¿½Æ‚É’Pï¿½Ìƒeï¿½Xï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½tï¿½@ï¿½Nï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ì‚ªï¿½ÛØ‚ï¿½ï¿½ï¿½ï¿½æ‚¤ï¿½É‚ï¿½ï¿½ï¿½B
+   - ï¿½ï¿½F`unittest`ï¿½ï¿½`pytest`ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½ÄA`calc_psi2i4demand`ï¿½ÌŒï¿½ï¿½Ê‚ï¿½ï¿½ï¿½ï¿½ØB
 
 ---
 
-### ‹ï‘Ì“I‚ÈŽŸ‚ÌƒXƒeƒbƒv
-1. **ƒR[ƒh‚Ì’ñŽ¦**F
-   - `app.py`‚Æ`tree.py`‚Ì‘S‘Ì‘œ‚âA`demand_planning`‚ÉŠÖ˜A‚·‚é•”•ª‚ð‹¤—L‚µ‚Ä‚¢‚½‚¾‚¯‚ê‚ÎA‚æ‚è‹ï‘Ì“I‚ÈƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒOˆÄ‚ð’ñˆÄ‚Å‚«‚Ü‚·B
-   - “Á‚ÉA`self.psi4demand`‚Ìƒf[ƒ^\‘¢iƒŠƒXƒg‚ÌŒ`ó‚â“à—ej‚ª•s–¾‚È‚½‚ßAÚ×‚ª‚í‚©‚é‚ÆÅ“K‰»ˆÄ‚ð’ñˆÄ‚µ‚â‚·‚­‚È‚è‚Ü‚·B
+### ï¿½ï¿½Ì“Iï¿½ÈŽï¿½ï¿½ÌƒXï¿½eï¿½bï¿½v
+1. **ï¿½Rï¿½[ï¿½hï¿½Ì’ï¿½**ï¿½F
+   - `app.py`ï¿½ï¿½`tree.py`ï¿½Ì‘Sï¿½Ì‘ï¿½ï¿½ï¿½A`demand_planning`ï¿½ÉŠÖ˜Aï¿½ï¿½ï¿½é•”ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Lï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎAï¿½ï¿½ï¿½ï¿½Ì“Iï¿½Èƒï¿½ï¿½tï¿½@ï¿½Nï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½Ä‚ï¿½ï¿½Ä‚Å‚ï¿½ï¿½Ü‚ï¿½ï¿½B
+   - ï¿½ï¿½ï¿½ÉA`self.psi4demand`ï¿½Ìƒfï¿½[ï¿½^ï¿½\ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½Xï¿½gï¿½ÌŒ`ï¿½ï¿½ï¿½ï¿½ï¿½eï¿½jï¿½ï¿½ï¿½sï¿½ï¿½ï¿½È‚ï¿½ï¿½ßAï¿½Ú×‚ï¿½ï¿½í‚©ï¿½ï¿½ÆÅ“Kï¿½ï¿½ï¿½Ä‚ï¿½ï¿½Ä‚ï¿½ï¿½â‚·ï¿½ï¿½ï¿½È‚ï¿½Ü‚ï¿½ï¿½B
 
-2. **—Dæ‡ˆÊ‚ÌŠm”F**F
-   - ‰Â“Ç«‚ÌŒüãAƒƒ‚ƒŠŒø—¦Aˆ—‘¬“x‚Ì‚Ç‚ê‚ðÅ—Dæ‚É‚·‚é‚©‹³‚¦‚Ä‚¢‚½‚¾‚¯‚ê‚ÎAd“_“I‚ÉƒAƒhƒoƒCƒX‚µ‚Ü‚·B
-   - —áFGUI‚ÌƒŒƒXƒ|ƒ“ƒX‘¬“x‚ðdŽ‹‚·‚é‚È‚çA”ñ“¯Šúˆ—i`asyncio`‚â`threading`j‚Ì“±“ü‚àŒŸ“¢‰Â”\B
+2. **ï¿½Dï¿½æ‡ï¿½Ê‚ÌŠmï¿½F**ï¿½F
+   - ï¿½Â“Çï¿½ï¿½ÌŒï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½xï¿½Ì‚Ç‚ï¿½ï¿½ï¿½Å—Dï¿½ï¿½É‚ï¿½ï¿½é‚©ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎAï¿½dï¿½_ï¿½Iï¿½ÉƒAï¿½hï¿½oï¿½Cï¿½Xï¿½ï¿½ï¿½Ü‚ï¿½ï¿½B
+   - ï¿½ï¿½FGUIï¿½Ìƒï¿½ï¿½Xï¿½|ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½xï¿½ï¿½ï¿½dï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½Aï¿½ñ“¯Šï¿½ï¿½ï¿½ï¿½ï¿½ï¿½i`asyncio`ï¿½ï¿½`threading`ï¿½jï¿½Ì“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â”\ï¿½B
 
-3. **ŽŽì—pƒR[ƒh‚Ì’ñ‹Ÿ**F
-   - ¬‚³‚Èƒvƒƒgƒ^ƒCƒvi—áF`Node`ƒNƒ‰ƒX‚Æ`PlanningEngine`ƒNƒ‰ƒX‚ÌƒTƒ“ƒvƒ‹j‚ðì¬‚µA“®ìŠm”F‚µ‚È‚ª‚çƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒO‚ði‚ß‚é‚±‚Æ‚ð‚¨Š©‚ß‚µ‚Ü‚·B
+3. **ï¿½ï¿½ï¿½ï¿½pï¿½Rï¿½[ï¿½hï¿½Ì’ï¿½**ï¿½F
+   - ï¿½ï¿½ï¿½ï¿½ï¿½Èƒvï¿½ï¿½ï¿½gï¿½^ï¿½Cï¿½vï¿½iï¿½ï¿½F`Node`ï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½`PlanningEngine`ï¿½Nï¿½ï¿½ï¿½Xï¿½ÌƒTï¿½ï¿½ï¿½vï¿½ï¿½ï¿½jï¿½ï¿½ï¿½ì¬ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½mï¿½Fï¿½ï¿½ï¿½È‚ï¿½ï¿½çƒŠï¿½tï¿½@ï¿½Nï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½ï¿½iï¿½ß‚é‚±ï¿½Æ‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½ï¿½Ü‚ï¿½ï¿½B
 
 ---
 
-### ‚Ü‚Æ‚ß
-- **`self`‚Ì¬—**FGUIAƒƒWƒbƒNAƒf[ƒ^\‘¢‚ð•ª—£‚µAƒNƒ‰ƒX‚ÌÓ”C‚ð–¾Šm‰»B`PlanningEngine`ƒNƒ‰ƒX‚Ì“±“ü‚Å–ðŠ„‚ð®—B
-- **ƒNƒ‰ƒXƒƒ\ƒbƒh vs ŠO•”ŠÖ”**Fó‘Ô‚ÉˆË‘¶‚·‚éƒƒWƒbƒN‚ÍƒNƒ‰ƒXƒƒ\ƒbƒhA”Ä—p“I‚Èˆ—‚ÍŠO•”ŠÖ”Bƒƒ‚ƒŠ‚â‘¬“x‚Ì·‚Í¬‚³‚¢‚ªA‰Â“Ç«‚Æ•ÛŽç«‚ð—DæB
-- **ƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒO**Fƒ‚ƒWƒ…[ƒ‹•ªŠ„A–½–¼“ˆêAƒRƒƒ“ƒg[ŽÀANumPyŠˆ—p‚ÅŒø—¦‰»B
+### ï¿½Ü‚Æ‚ï¿½
+- **`self`ï¿½Ìï¿½ï¿½ï¿½**ï¿½FGUIï¿½Aï¿½ï¿½ï¿½Wï¿½bï¿½Nï¿½Aï¿½fï¿½[ï¿½^ï¿½\ï¿½ï¿½ï¿½ð•ª—ï¿½ï¿½ï¿½ï¿½Aï¿½Nï¿½ï¿½ï¿½Xï¿½ÌÓ”Cï¿½ð–¾Šmï¿½ï¿½ï¿½B`PlanningEngine`ï¿½Nï¿½ï¿½ï¿½Xï¿½Ì“ï¿½ï¿½ï¿½ï¿½Å–ï¿½ï¿½ï¿½ï¿½ð®—ï¿½ï¿½B
+- **ï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½\ï¿½bï¿½h vs ï¿½Oï¿½ï¿½ï¿½Öï¿½**ï¿½Fï¿½ï¿½Ô‚ÉˆË‘ï¿½ï¿½ï¿½ï¿½éƒï¿½Wï¿½bï¿½Nï¿½ÍƒNï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½Aï¿½Ä—pï¿½Iï¿½Èï¿½ï¿½ï¿½ï¿½ÍŠOï¿½ï¿½ï¿½Öï¿½ï¿½Bï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â‘¬ï¿½xï¿½Ìï¿½ï¿½Íï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½Â“Çï¿½ï¿½Æ•ÛŽç«ï¿½ï¿½Dï¿½ï¿½B
+- **ï¿½ï¿½ï¿½tï¿½@ï¿½Nï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½O**ï¿½Fï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½Rï¿½ï¿½ï¿½ï¿½ï¿½gï¿½[ï¿½ï¿½ï¿½ANumPyï¿½ï¿½ï¿½pï¿½ÅŒï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B
 
-•K—v‚Å‚ ‚ê‚ÎA‹ï‘Ì“I‚ÈƒR[ƒh‚ð‹¤—L‚¢‚½‚¾‚­‚©A“Á’è‚Ì•”•ªi—áF`calcPS2I4demand`‚ÌÅ“K‰»j‚ÉÅ“_‚ði‚Á‚½Ž¿–â‚ð‚¢‚½‚¾‚¯‚ê‚ÎA‚³‚ç‚ÉÚ×‚ÈŽx‰‡‚ª‰Â”\‚Å‚·I‘å™—l‚ÌƒvƒƒWƒFƒNƒg‚Ì¬Œ÷‚ðS‚æ‚è‰ž‰‡‚µ‚Ä‚¨‚è‚Ü‚·I
+ï¿½Kï¿½vï¿½Å‚ï¿½ï¿½ï¿½ÎAï¿½ï¿½Ì“Iï¿½ÈƒRï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½Ì•ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½F`calcPS2I4demand`ï¿½ÌÅ“Kï¿½ï¿½ï¿½jï¿½ÉÅ“_ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎAï¿½ï¿½ï¿½ï¿½ÉÚ×‚ÈŽxï¿½ï¿½ï¿½ï¿½ï¿½Â”\ï¿½Å‚ï¿½ï¿½Iï¿½å™ï¿½lï¿½Ìƒvï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½Sï¿½ï¿½è‰žï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½I
 
 
 
@@ -292,7 +292,7 @@ class Node:
 
 # PySI Planning Engines
 
-# ‰Šú’l‚ðÝ’è æs¶ŽY‚ÌT”
+# ï¿½ï¿½ï¿½ï¿½ï¿½lï¿½ï¿½Ý’ï¿½ ï¿½ï¿½sï¿½ï¿½ï¿½Yï¿½ÌTï¿½ï¿½
         self.pre_proc_LT_entry.insert(0, str(self.config.DEFAULT_PRE_PROC_LT))  
 # outbound
 self.demand_planning   
@@ -351,7 +351,7 @@ def calc_all_psi2i4demand(node):
 
     def calcPS2I4demand(self):
 
-        # psiS2P = self.psi4demand # copy‚¹‚¸‚ÉA’¼Ú‚³‚í‚é
+        # psiS2P = self.psi4demand # copyï¿½ï¿½ï¿½ï¿½ï¿½ÉAï¿½ï¿½ï¿½Ú‚ï¿½ï¿½ï¿½ï¿½
 
         plan_len = 53 * self.plan_range
         # plan_len = len(self.psi4demand)
@@ -371,13 +371,13 @@ def calc_all_psi2i4demand(node):
             # # I(n-1)+P(n)-S(n)
             # *********************
 
-            work = i0 + p  # ‘OTÝŒÉ‚Æ“–T’…‰×•ª availables
+            work = i0 + p  # ï¿½Oï¿½Tï¿½ÝŒÉ‚Æ“ï¿½ï¿½Tï¿½ï¿½ï¿½×•ï¿½ availables
 
-            # ‚±‚±‚ÅAŠú––‚ÌÝŒÉASo‰×=”„ã‚ð‘€ì‚µ‚Ä‚¢‚é
-            # So‰×=”„ã‚ð–¾Ž¦“I‚Élog‚É‚µ‚ÄA”„ã‚Æ‚µ‚Ä‹L˜^‚µA•\Ž¦‚·‚éˆ—
-            # o‰×‚³‚ê‚½S=”„ãAÝŒÉIA–¢o‰×CO‚ÌW‡‚ð³‚µ‚­•\Œ»‚·‚é
+            # ï¿½ï¿½ï¿½ï¿½ï¿½ÅAï¿½ï¿½ï¿½ï¿½ï¿½ÌÝŒÉASï¿½oï¿½ï¿½=ï¿½ï¿½ï¿½ï¿½ð‘€ì‚µï¿½Ä‚ï¿½ï¿½ï¿½
+            # Sï¿½oï¿½ï¿½=ï¿½ï¿½ï¿½ï¿½ð–¾Žï¿½ï¿½Iï¿½ï¿½logï¿½É‚ï¿½ï¿½ÄAï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½Ä‹Lï¿½^ï¿½ï¿½ï¿½Aï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½éˆï¿½ï¿½
+            # ï¿½oï¿½×‚ï¿½ï¿½ê‚½S=ï¿½ï¿½ï¿½ï¿½Aï¿½ÝŒï¿½Iï¿½Aï¿½ï¿½ï¿½oï¿½ï¿½COï¿½ÌWï¿½ï¿½ï¿½ð³‚ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-            # ƒ‚ƒm‚ª‚¨‹à‚É‘ã‚í‚éuŠÔ #@240909ƒR‚±‚Å‚Í‚È‚­‚ÄSŽÀÑ
+            # ï¿½ï¿½ï¿½mï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É‘ï¿½ï¿½ï¿½uï¿½ï¿½ #@240909ï¿½Rï¿½ï¿½ï¿½Å‚Í‚È‚ï¿½ï¿½ï¿½Sï¿½ï¿½ï¿½ï¿½
 
             diff_list = [x for x in work if x not in s]  # I(n-1)+P(n)-S(n)
 
@@ -404,19 +404,19 @@ def calc_all_psi2i4demand(node):
         pre_prod_week = self.pre_proc_LT
 
 
-        # root_node_outbound‚Ìsupply‚Ì"S"‚Ì‚Ý‚ð•½€‰»‚µ‚Ä¶¬‚µ‚Ä‚¢‚é
+        # root_node_outboundï¿½ï¿½supplyï¿½ï¿½"S"ï¿½Ì‚Ý‚ð•½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
         demand_leveling_on_ship(self.root_node_outbound, pre_prod_week, year_st, year_end)
 
 
-        # root_node_outbound‚Ìsupply‚Ì"PSI"‚ð¶¬‚µ‚Ä‚¢‚é
+        # root_node_outboundï¿½ï¿½supplyï¿½ï¿½"PSI"ï¿½ð¶ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
         ##@241114 KEY CODE
-        self.root_node_outbound.calcS2P_4supply()  #mother plant‚Ìconfirm S=> P
-        self.root_node_outbound.calcPS2I4supply()  #mother plant‚ÌPS=>I
+        self.root_node_outbound.calcS2P_4supply()  #mother plantï¿½ï¿½confirm S=> P
+        self.root_node_outbound.calcPS2I4supply()  #mother plantï¿½ï¿½PS=>I
 
 
         #@241114 KEY CODE
         # ***************************************
-        # ‚»‚Ì3@“s“x‚Ìparent search‚ðŽÀs setPS_on_ship2node
+        # ï¿½ï¿½ï¿½ï¿½3ï¿½@ï¿½sï¿½xï¿½ï¿½parent searchï¿½ï¿½ï¿½ï¿½ï¿½s setPS_on_ship2node
         # ***************************************
         feedback_psi_lists(self.root_node_outbound, self.nodes_outbound)
 
@@ -424,7 +424,7 @@ def calc_all_psi2i4demand(node):
 
         self.update_evaluation_results()
 
-        # PSIŒv‰æ‚Ì‰Šúó‘Ô‚ðƒoƒbƒNƒAƒbƒv
+        # PSIï¿½vï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½Ô‚ï¿½ï¿½oï¿½bï¿½Nï¿½Aï¿½bï¿½v
         self.psi_backup_to_file(self.root_node_outbound, 'psi_backup.pkl')
 
         self.view_nx_matlib()
@@ -447,29 +447,29 @@ def demand_leveling_on_ship(root_node_outbound, pre_prod_week, year_st, year_end
 
 
     #@241114
-    # Žù‹‹ƒoƒ‰ƒ“ƒX‚Ì–â‘è‚ÍA‚Ð‚Æ‚Âã‚Ìƒlƒbƒgƒ[ƒN‘S‘Ì‚Ìoptimize‚Å‰ð‚­
+    # ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½Ì–ï¿½ï¿½ÍAï¿½Ð‚Æ‚Âï¿½Ìƒlï¿½bï¿½gï¿½ï¿½ï¿½[ï¿½Nï¿½Sï¿½Ì‚ï¿½optimizeï¿½Å‰ï¿½ï¿½ï¿½
 
-    # ƒƒbƒg’PˆÊ‚Å‹Ÿ‹‹‚ð•Ï‰»‚³‚¹‚ÄAweight=ƒƒbƒg(CPU_profit)—˜‰v‚Åsimulate
-    # Ý”õ“ŠŽ‘‚Ì‰ñŽûŠúŠÔ‚ðŒ©‚é
+    # ï¿½ï¿½ï¿½bï¿½gï¿½Pï¿½Ê‚Å‹ï¿½ï¿½ï¿½ï¿½ï¿½Ï‰ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÄAweight=ï¿½ï¿½ï¿½bï¿½g(CPU_profit)ï¿½ï¿½ï¿½vï¿½ï¿½simulate
+    # ï¿½Ý”ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‰ï¿½ï¿½ï¿½ï¿½ï¿½Ô‚ï¿½ï¿½ï¿½ï¿½ï¿½
 
-    # ‹Ÿ‹‹>=Žù—v‚È‚çƒIƒyƒŒ[ƒVƒ‡ƒ“–â‘è
-    # ‹Ÿ‹‹<Žù—v‚È‚ç‹Ÿ‹‹”z•ª‚ÆƒIƒyƒŒ[ƒVƒ‡ƒ“–â‘è
+    # ï¿½ï¿½ï¿½ï¿½>=ï¿½ï¿½ï¿½vï¿½È‚ï¿½Iï¿½yï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    # ï¿½ï¿½ï¿½ï¿½<ï¿½ï¿½ï¿½vï¿½È‚ç‹Ÿï¿½ï¿½ï¿½zï¿½ï¿½ï¿½ÆƒIï¿½yï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-    # optimise‚ÅAƒ‹[ƒg‚Æ—Ê‚ðŒˆ’è
-    # PSI‚ÅAoperation revenue cost profit‚ðŽZ’è business •]‰¿
+    # optimiseï¿½ÅAï¿½ï¿½ï¿½[ï¿½gï¿½Æ—Ê‚ï¿½ï¿½ï¿½ï¿½ï¿½
+    # PSIï¿½ÅAoperation revenue cost profitï¿½ï¿½ï¿½Zï¿½ï¿½ business ï¿½]ï¿½ï¿½
 
-    # ‹ÆŠENo1/2/3‚Ì‹Ÿ‹‹í—ª‚ðsimulate‚µ‚ÄAbusiness•]‰¿‚·‚é
+    # ï¿½ÆŠENo1/2/3ï¿½Ì‹ï¿½ï¿½ï¿½ï¿½í—ªï¿½ï¿½simulateï¿½ï¿½ï¿½ÄAbusinessï¿½]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 
-    # node_psi_dict_Ot4Dm‚Å‚ÍA––’[Žsê‚Ìleafnode‚Ì‚ÝƒZƒbƒg
+    # node_psi_dict_Ot4Dmï¿½Å‚ÍAï¿½ï¿½ï¿½[ï¿½sï¿½ï¿½ï¿½leafnodeï¿½Ì‚ÝƒZï¿½bï¿½g
     #
-    # root_node‚ÌS psi_list[w][0]‚ÉAleveling‚³‚ê‚½Šm’èo‰×S_confirm_list‚ðƒZƒb    ƒg
+    # root_nodeï¿½ï¿½S psi_list[w][0]ï¿½ÉAlevelingï¿½ï¿½ï¿½ê‚½ï¿½mï¿½ï¿½oï¿½ï¿½S_confirm_listï¿½ï¿½ï¿½Zï¿½b    ï¿½g
 
-    # ”NŠÔ‚Ì‘Žù—v(‘lots)‚ðNTæs‚Å¶ŽY‚·‚éB
-    # —á‚¦‚ÎA‚Rƒ–ŒŽæs‚Í13Tæs¶ŽY‚Æ‚µ‚ÄA”NŠÔ‘Žù—v‚ðT•½‹Ï‚É‚·‚éB
+    # ï¿½Nï¿½Ô‚Ì‘ï¿½ï¿½ï¿½ï¿½v(ï¿½ï¿½lots)ï¿½ï¿½Nï¿½Tï¿½ï¿½sï¿½Åï¿½ï¿½Yï¿½ï¿½ï¿½ï¿½B
+    # ï¿½á‚¦ï¿½ÎAï¿½Rï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½13ï¿½Tï¿½ï¿½sï¿½ï¿½ï¿½Yï¿½Æ‚ï¿½ï¿½ÄAï¿½Nï¿½Ô‘ï¿½ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½Tï¿½ï¿½ï¿½Ï‚É‚ï¿½ï¿½ï¿½B
 
-    # So‰×‚Å•½€‰»‚µ‚ÄAconfirmedS-I-P
-    # conf_S‚©‚çconf_P‚ð¶¬‚µ‚ÄAconf_P-S-I  PUSH and PULL
+    # Sï¿½oï¿½×‚Å•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÄAconfirmedS-I-P
+    # conf_Sï¿½ï¿½ï¿½ï¿½conf_Pï¿½ð¶ï¿½ï¿½ï¿½ï¿½ÄAconf_P-S-I  PUSH and PULL
 
     S_list = []
     S_allocated = []
@@ -481,13 +481,13 @@ def demand_leveling_on_ship(root_node_outbound, pre_prod_week, year_st, year_end
 
     leveling_S_in = root_node_outbound.psi4demand
 
-    # psi_list‚©‚çS_list‚ð¶¬‚·‚é
+    # psi_listï¿½ï¿½ï¿½ï¿½S_listï¿½ð¶ï¿½ï¿½ï¿½ï¿½ï¿½
     for psi in leveling_S_in:
 
         S_list.append(psi[0])
 
-    # ŠJŽn”N‚ðŽæ“¾‚·‚é
-    plan_year_st = year_st  # ŠJŽn”N‚ÌƒZƒbƒg in main()—vC³
+    # ï¿½Jï¿½nï¿½Nï¿½ï¿½ï¿½æ“¾ï¿½ï¿½ï¿½ï¿½
+    plan_year_st = year_st  # ï¿½Jï¿½nï¿½Nï¿½ÌƒZï¿½bï¿½g in main()ï¿½vï¿½Cï¿½ï¿½
 
     for yyyy in range(plan_year_st, plan_year_st + plan_range + 1):
 
@@ -495,10 +495,10 @@ def demand_leveling_on_ship(root_node_outbound, pre_prod_week, year_st, year_end
 
         year_lots_list.append(year_lots)
 
-    #        # Œ‹‰Ê‚ðo—Í
+    #        # ï¿½ï¿½ï¿½Ê‚ï¿½ï¿½oï¿½ï¿½
     #       #print(yyyy, " year carrying lots:", year_lots)
     #
-    #    # Œ‹‰Ê‚ðo—Í
+    #    # ï¿½ï¿½ï¿½Ê‚ï¿½ï¿½oï¿½ï¿½
     #   #print(" year_lots_list:", year_lots_list)
 
     # an image of sample data
@@ -519,18 +519,18 @@ def demand_leveling_on_ship(root_node_outbound, pre_prod_week, year_st, year_end
 
         year_list.append(yyyy)
 
-        # ƒeƒXƒg—p‚Ì”N‚ðŽw’è
+        # ï¿½eï¿½Xï¿½gï¿½pï¿½Ì”Nï¿½ï¿½ï¿½wï¿½ï¿½
         year_to_check = yyyy
 
-        # Žw’è‚³‚ê‚½”N‚ÌISOT”‚ðŽæ“¾
+        # ï¿½wï¿½è‚³ï¿½ê‚½ï¿½Nï¿½ï¿½ISOï¿½Tï¿½ï¿½ï¿½ï¿½ï¿½æ“¾
         week_count = is_52_or_53_week_year(year_to_check)
 
         year_week_list.append(week_count)
 
-    #        # Œ‹‰Ê‚ðo—Í
+    #        # ï¿½ï¿½ï¿½Ê‚ï¿½ï¿½oï¿½ï¿½
     #       #print(year_to_check, " year has week_count:", week_count)
     #
-    #    # Œ‹‰Ê‚ðo—Í
+    #    # ï¿½ï¿½ï¿½Ê‚ï¿½ï¿½oï¿½ï¿½
     #   #print(" year_week_list:", year_week_list)
 
     # print("year_list", year_list)
@@ -548,7 +548,7 @@ def demand_leveling_on_ship(root_node_outbound, pre_prod_week, year_st, year_end
 
 
     # *****************************
-    # ¶ŽY•½€‰»‚Ì‚½‚ß‚Ì”NŠÔ‚ÌT•½‹Ï¶ŽY—Ê(ƒƒbƒg”’PˆÊ)
+    # ï¿½ï¿½ï¿½Yï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ß‚Ì”Nï¿½Ô‚ÌTï¿½ï¿½ï¿½Ïï¿½ï¿½Yï¿½ï¿½(ï¿½ï¿½ï¿½bï¿½gï¿½ï¿½ï¿½Pï¿½ï¿½)
     # *****************************
 
     # *****************************
@@ -574,16 +574,16 @@ def demand_leveling_on_ship(root_node_outbound, pre_prod_week, year_st, year_end
     #
     # year_average_lots_list [0, 57, 57, 57, 57, 57, 0]
 
-    # ”NŠÔ‚Ì‘Žù—v(‘lots)‚ðNTæs‚Å¶ŽY‚·‚éB
-    # —á‚¦‚ÎA‚Rƒ–ŒŽæs‚Í13Tæs¶ŽY‚Æ‚µ‚ÄA”NŠÔ‘Žù—v‚ðT•½‹Ï‚É‚·‚éB
+    # ï¿½Nï¿½Ô‚Ì‘ï¿½ï¿½ï¿½ï¿½v(ï¿½ï¿½lots)ï¿½ï¿½Nï¿½Tï¿½ï¿½sï¿½Åï¿½ï¿½Yï¿½ï¿½ï¿½ï¿½B
+    # ï¿½á‚¦ï¿½ÎAï¿½Rï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½13ï¿½Tï¿½ï¿½sï¿½ï¿½ï¿½Yï¿½Æ‚ï¿½ï¿½ÄAï¿½Nï¿½Ô‘ï¿½ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½Tï¿½ï¿½ï¿½Ï‚É‚ï¿½ï¿½ï¿½B
 
     #
-    # “ü—Íƒf[ƒ^‚Ì‘O’ñ
+    # ï¿½ï¿½ï¿½Íƒfï¿½[ï¿½^ï¿½Ì‘Oï¿½ï¿½
     #
-    # leveling_S_in[w][0] == S_list‚ÍAoutbound‚Ìdemand_plan‚ÅA
-    # ƒ}ƒU[ƒvƒ‰ƒ“ƒg‚Ìo‰×ƒ|ƒWƒVƒ‡ƒ“‚ÌS‚ÅA
-    # 5”N•ª TŽŸ ÅIŽsê‚É‚¨‚¯‚élot_idƒŠƒXƒg‚ª
-    # LT offset‚³‚ê‚½ó‘Ô‚Å“ü‚Á‚Ä‚¢‚é
+    # leveling_S_in[w][0] == S_listï¿½ÍAoutboundï¿½ï¿½demand_planï¿½ÅA
+    # ï¿½}ï¿½Uï¿½[ï¿½vï¿½ï¿½ï¿½ï¿½ï¿½gï¿½Ìoï¿½×ƒ|ï¿½Wï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Sï¿½ÅA
+    # 5ï¿½Nï¿½ï¿½ ï¿½Tï¿½ï¿½ ï¿½ÅIï¿½sï¿½ï¿½É‚ï¿½ï¿½ï¿½ï¿½ï¿½lot_idï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½
+    # LT offsetï¿½ï¿½ï¿½ê‚½ï¿½ï¿½Ô‚Å“ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
     #
     # year_list     = [2023,2024,2025,2026,2027,2028,2029]
 
@@ -592,21 +592,21 @@ def demand_leveling_on_ship(root_node_outbound, pre_prod_week, year_st, year_end
     # year_average_lots_list [0, 57, 57, 57, 57, 57, 0]
 
     # ********************************
-    # æs¶ŽY‚ÌT”
+    # ï¿½ï¿½sï¿½ï¿½ï¿½Yï¿½ÌTï¿½ï¿½
     # ********************************
     # precedence_production_week =13
 
-    pre_prod_week =26 # 26T=6‚©ŒŽ‚Ìæs¶ŽY‚ðƒZƒbƒg
-    # pre_prod_week =13 # 13T=3‚©ŒŽ‚Ìæs¶ŽY‚ðƒZƒbƒg
-    # pre_prod_week = 6  # 6T=1.5‚©ŒŽ‚Ìæs¶ŽY‚ðƒZƒbƒg
+    pre_prod_week =26 # 26ï¿½T=6ï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½sï¿½ï¿½ï¿½Yï¿½ï¿½ï¿½Zï¿½bï¿½g
+    # pre_prod_week =13 # 13ï¿½T=3ï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½sï¿½ï¿½ï¿½Yï¿½ï¿½ï¿½Zï¿½bï¿½g
+    # pre_prod_week = 6  # 6ï¿½T=1.5ï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½sï¿½ï¿½ï¿½Yï¿½ï¿½ï¿½Zï¿½bï¿½g
 
     # ********************************
-    # æs¶ŽY‚ÌŠJŽnT‚ð‹‚ß‚é
+    # ï¿½ï¿½sï¿½ï¿½ï¿½Yï¿½ÌŠJï¿½nï¿½Tï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
     # ********************************
-    # Žsê“Š“ü‚Ì‘O”N‚É‚¨‚¢‚Ä i= 0  year_list[i]           # 2023
-    # Žsê“Š“ü‚Ì‘O”N‚ÌISOT‚Ì” year_week_list[i]         # 52
+    # ï¿½sï¿½ê“Šï¿½ï¿½ï¿½Ì‘Oï¿½Nï¿½É‚ï¿½ï¿½ï¿½ï¿½ï¿½ i= 0  year_list[i]           # 2023
+    # ï¿½sï¿½ê“Šï¿½ï¿½ï¿½Ì‘Oï¿½Nï¿½ï¿½ISOï¿½Tï¿½Ìï¿½ year_week_list[i]         # 52
 
-    # æs¶ŽY‚ÌŠJŽnT‚ÍAŽsê“Š“ü‚Ì‘O”N‚ÌISOT‚Ì” - æs¶ŽYT
+    # ï¿½ï¿½sï¿½ï¿½ï¿½Yï¿½ÌŠJï¿½nï¿½Tï¿½ÍAï¿½sï¿½ê“Šï¿½ï¿½ï¿½Ì‘Oï¿½Nï¿½ï¿½ISOï¿½Tï¿½Ìï¿½ - ï¿½ï¿½sï¿½ï¿½ï¿½Yï¿½T
 
     pre_prod_start_week = 0
 
@@ -614,36 +614,36 @@ def demand_leveling_on_ship(root_node_outbound, pre_prod_week, year_st, year_end
 
     pre_prod_start_week = year_week_list[i] - pre_prod_week
 
-    # ƒXƒ^[ƒgT‚Ì‘OT‚Ü‚ÅA[]ƒŠƒXƒg‚Å–„‚ß‚Ä‚¨‚­
+    # ï¿½Xï¿½^ï¿½[ï¿½gï¿½Tï¿½Ì‘Oï¿½Tï¿½Ü‚ÅA[]ï¿½ï¿½ï¿½Xï¿½gï¿½Å–ï¿½ï¿½ß‚Ä‚ï¿½ï¿½ï¿½
     for i in range(pre_prod_start_week):
         S_allocated.append([])
 
     # ********************************
-    # ÅIŽsê‚©‚ç‚ÌLT offset‚³‚ê‚½o‰×—v‹lot_idƒŠƒXƒg‚ð
+    # ï¿½ÅIï¿½sï¿½ê‚©ï¿½ï¿½ï¿½LT offsetï¿½ï¿½ï¿½ê‚½ï¿½oï¿½×—vï¿½ï¿½lot_idï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½
     # Allocate demand to mother plant weekly slots
     # ********************************
 
-    # S_list‚ÌT•Êlot_idƒŠƒXƒg‚ðˆê’¼ü‚Ìlot_idƒŠƒXƒg‚É•ÏŠ·‚·‚é
+    # S_listï¿½ÌTï¿½ï¿½lot_idï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½ê’¼ï¿½ï¿½ï¿½ï¿½lot_idï¿½ï¿½ï¿½Xï¿½gï¿½É•ÏŠï¿½ï¿½ï¿½ï¿½ï¿½
     # mother plant weekly slots
 
-    # ‹óƒŠƒXƒg‚ð–³Ž‹‚µ‚ÄAˆê’¼ü‚Ìlot_idƒŠƒXƒg‚É•ÏŠ·
+    # ï¿½óƒŠƒXï¿½gï¿½ð–³Žï¿½ï¿½ï¿½ï¿½ÄAï¿½ê’¼ï¿½ï¿½ï¿½ï¿½lot_idï¿½ï¿½ï¿½Xï¿½gï¿½É•ÏŠï¿½
 
-    # ‹óƒŠƒXƒg‚ðœŠO‚µ‚Äˆê‚Â‚ÌƒŠƒXƒg‚ÉŒ‹‡‚·‚éˆ—
+    # ï¿½óƒŠƒXï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Äˆï¿½Â‚Ìƒï¿½ï¿½Xï¿½gï¿½ÉŒï¿½ï¿½ï¿½ï¿½ï¿½ï¿½éˆï¿½ï¿½
     S_one_list = [item for sublist in S_list if sublist for item in sublist]
 
-    ## Œ‹‰Ê•\Ž¦
+    ## ï¿½ï¿½ï¿½Ê•\ï¿½ï¿½
     ##print(S_one_list)
 
-    # to be defined –ˆ”N‚Ì’è”‚Å‚Ìlot_id‚ÌØ‚èo‚µ
+    # to be defined ï¿½ï¿½ï¿½Nï¿½Ì’è”ï¿½Å‚ï¿½lot_idï¿½ÌØ‚ï¿½oï¿½ï¿½
 
-    # listB‚ÌŠe—v‘f‚ÅŽw’è‚³‚ê‚½”‚¾‚¯listA‚©‚ç—v‘f‚ðØ‚èo‚µ‚Ä
-    # V‚µ‚¢ƒŠƒXƒglistC‚ðì¬
+    # listBï¿½ÌŠeï¿½vï¿½fï¿½ÅŽwï¿½è‚³ï¿½ê‚½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½listAï¿½ï¿½ï¿½ï¿½vï¿½fï¿½ï¿½Ø‚ï¿½oï¿½ï¿½ï¿½ï¿½
+    # ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½glistCï¿½ï¿½ï¿½ì¬
 
-    listA = S_one_list  # 5”N•ª‚Ìlot_idƒŠƒXƒg
+    listA = S_one_list  # 5ï¿½Nï¿½ï¿½ï¿½ï¿½lot_idï¿½ï¿½ï¿½Xï¿½g
 
-    listB = year_lots_list  # –ˆ”N–ˆ‚Ì‘ƒƒbƒg”
+    listB = year_lots_list  # ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½Ì‘ï¿½ï¿½ï¿½ï¿½bï¿½gï¿½ï¿½
 
-    listC = []  # –ˆ”N‚Ìlot_idƒŠƒXƒg
+    listC = []  # ï¿½ï¿½ï¿½Nï¿½ï¿½lot_idï¿½ï¿½ï¿½Xï¿½g
 
     start_idx = 0
 
@@ -659,7 +659,7 @@ def demand_leveling_on_ship(root_node_outbound, pre_prod_week, year_st, year_end
         # **********************************
         sliced_lots = listA[start_idx:end_idx]
 
-        # –ˆT‚Ì¶ŽY˜g‚ÍAyear_average_lots_list‚Ì•½‹Ï’l‚ðŽæ“¾‚·‚éB
+        # ï¿½ï¿½ï¿½Tï¿½Ìï¿½ï¿½Yï¿½gï¿½ÍAyear_average_lots_listï¿½Ì•ï¿½ï¿½Ï’lï¿½ï¿½ï¿½æ“¾ï¿½ï¿½ï¿½ï¿½B
         N = year_average_lots_list[i]
 
         if N == 0:
@@ -668,7 +668,7 @@ def demand_leveling_on_ship(root_node_outbound, pre_prod_week, year_st, year_end
 
         else:
 
-            # ‚»‚Ì”N‚ÌTŽŸ‚Ìo‰×—\’è”‚ª¶¬‚³‚ê‚éB
+            # ï¿½ï¿½ï¿½Ì”Nï¿½ÌTï¿½ï¿½ï¿½Ìoï¿½×—\ï¿½è”ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B
             S_alloc_a_year = [
                 sliced_lots[j : j + N] for j in range(0, len(sliced_lots), N)
             ]
@@ -678,7 +678,7 @@ def demand_leveling_on_ship(root_node_outbound, pre_prod_week, year_st, year_end
 
         start_idx = end_idx
 
-    ## Œ‹‰Ê•\Ž¦
+    ## ï¿½ï¿½ï¿½Ê•\ï¿½ï¿½
     # print("S_allocated", S_allocated)
 
     # set psi on outbound supply
@@ -688,10 +688,10 @@ def demand_leveling_on_ship(root_node_outbound, pre_prod_week, year_st, year_end
 
 
     # ***********************************************
-    #@241113 CHANGE root_node_outbound.psi4supply‚ª‘¶Ý‚·‚é‚Æ‚¢‚¤‘O’ñ
+    #@241113 CHANGE root_node_outbound.psi4supplyï¿½ï¿½ï¿½ï¿½ï¿½Ý‚ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½ï¿½ï¿½Oï¿½ï¿½
     # ***********************************************
     #
-    #node_name = root_node_outbound.name  # Node‚©‚çnode_name‚ðŽæo‚·
+    #node_name = root_node_outbound.name  # Nodeï¿½ï¿½ï¿½ï¿½node_nameï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
     #
     ## for w, pSi in enumerate( S_allocated ):
     ##
@@ -777,7 +777,7 @@ def demand_leveling_on_ship(root_node_outbound, pre_prod_week, year_st, year_end
 
     def calcPS2I4supply(self): # this "self" is an instance of class "Node"
 
-        # psiS2P = self.psi4demand # copy‚¹‚¸‚ÉA’¼Ú‚³‚í‚é
+        # psiS2P = self.psi4demand # copyï¿½ï¿½ï¿½ï¿½ï¿½ÉAï¿½ï¿½ï¿½Ú‚ï¿½ï¿½ï¿½ï¿½
 
         plan_len = 53 * self.plan_range
         # plan_len = len(self.psi4supply)
@@ -797,13 +797,13 @@ def demand_leveling_on_ship(root_node_outbound, pre_prod_week, year_st, year_end
             # # I(n-1)+P(n)-S(n)
             # *********************
 
-            work = i0 + p  # ‘OTÝŒÉ‚Æ“–T’…‰×•ª availables
+            work = i0 + p  # ï¿½Oï¿½Tï¿½ÝŒÉ‚Æ“ï¿½ï¿½Tï¿½ï¿½ï¿½×•ï¿½ availables
 
-            # memo ‚±‚±‚ÅAŠú––‚ÌÝŒÉASo‰×=”„ã‚ð‘€ì‚µ‚Ä‚¢‚é
-            # So‰×=”„ã‚ð–¾Ž¦“I‚Élog‚É‚µ‚ÄA”„ã‚Æ‚µ‚Ä‹L˜^‚µA•\Ž¦‚·‚éˆ—
-            # o‰×‚³‚ê‚½S=”„ãAÝŒÉIA–¢o‰×CO‚ÌW‡‚ð³‚µ‚­•\Œ»‚·‚é
+            # memo ï¿½ï¿½ï¿½ï¿½ï¿½ÅAï¿½ï¿½ï¿½ï¿½ï¿½ÌÝŒÉASï¿½oï¿½ï¿½=ï¿½ï¿½ï¿½ï¿½ð‘€ì‚µï¿½Ä‚ï¿½ï¿½ï¿½
+            # Sï¿½oï¿½ï¿½=ï¿½ï¿½ï¿½ï¿½ð–¾Žï¿½ï¿½Iï¿½ï¿½logï¿½É‚ï¿½ï¿½ÄAï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½Ä‹Lï¿½^ï¿½ï¿½ï¿½Aï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½éˆï¿½ï¿½
+            # ï¿½oï¿½×‚ï¿½ï¿½ê‚½S=ï¿½ï¿½ï¿½ï¿½Aï¿½ÝŒï¿½Iï¿½Aï¿½ï¿½ï¿½oï¿½ï¿½COï¿½ÌWï¿½ï¿½ï¿½ð³‚ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-            # ƒ‚ƒm‚ª‚¨‹à‚É‘ã‚í‚éuŠÔ
+            # ï¿½ï¿½ï¿½mï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É‘ï¿½ï¿½ï¿½uï¿½ï¿½
 
             diff_list = [x for x in work if x not in s]  # I(n-1)+P(n)-S(n)
 
@@ -813,16 +813,17 @@ def demand_leveling_on_ship(root_node_outbound, pre_prod_week, year_st, year_end
             # probare a lot checking process
             # ************************************
             
-            if self.name == "MUC_N":
-
-                if w in [53,54,55,56,57]:
-
-                    print("s, co, i0, i1, p ", w )
-                    print("s" , w, s )
-                    print("co", w, co)
-                    print("i0", w, i0)
-                    print("i1", w, i1)
-                    print("p" , w, p )
+            #@STOP
+            #if self.name == "MUC_N":
+            #
+            #    if w in [53,54,55,56,57]:
+            #
+            #        print("s, co, i0, i1, p ", w )
+            #        print("s" , w, s )
+            #        print("co", w, co)
+            #        print("i0", w, i0)
+            #        print("i1", w, i1)
+            #        print("p" , w, p )
 
 
 
@@ -831,7 +832,7 @@ def PUSH_process(node):
 
 
     # ***************
-    # decoupl node‚É“ü‚Á‚ÄÅ‰‚ÉcalcPS2I‚Åó‘Ô‚ð®‚¦‚é
+    # decoupl nodeï¿½É“ï¿½ï¿½ï¿½ï¿½ÄÅï¿½ï¿½ï¿½calcPS2Iï¿½Åï¿½Ô‚ð®‚ï¿½ï¿½ï¿½
     # ***************
     node.calcPS2I4supply()  # calc_psi with PULL_S
 
@@ -846,20 +847,20 @@ def push_pull_all_psi2i_decouple4supply5(node, decouple_nodes):
     if node.name in decouple_nodes:
 
         # ***************
-        # decoupl node‚É“ü‚Á‚ÄÅ‰‚ÉcalcPS2I‚Åó‘Ô‚ð®‚¦‚é
+        # decoupl nodeï¿½É“ï¿½ï¿½ï¿½ï¿½ÄÅï¿½ï¿½ï¿½calcPS2Iï¿½Åï¿½Ô‚ð®‚ï¿½ï¿½ï¿½
         # ***************
         node.calcPS2I4supply()  # calc_psi with PULL_S
 
 
-        #@241002 decoupling node‚Ì‚ÝpullS‚ÅŠm’èship
+        #@241002 decoupling nodeï¿½Ì‚ï¿½pullSï¿½ÅŠmï¿½ï¿½ship
         # *******************************************
-        # decouple node‚ÍApull_S‚Åo‰×ŽwŽ¦‚·‚é
+        # decouple nodeï¿½ÍApull_Sï¿½Åoï¿½×Žwï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         # *******************************************
         copy_S_demand2supply(node)
 
-        PUSH_process(node)         # supply SP2I‚µ‚Ä‚©‚ç‚Ì
+        PUSH_process(node)         # supply SP2Iï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½
 
-        apply_pull_process(node)   # demandS‚ÉØ‚è‘Ö‚¦
+        apply_pull_process(node)   # demandSï¿½ÉØ‚ï¿½Ö‚ï¿½
 
     else:
 

@@ -4,7 +4,7 @@ from typing import Dict, Any, List, Tuple
 import pandas as pd
 
 # あなたの operations から必要な関数を使う
-from pysi.plan.planning_operation import (
+from pysi.plan.operations import (
     _build_iso_week_index_map,
     _make_lot_id_list_slots_iso,
     set_df_Slots2psi4demand,   # LEAFにS投入→S→P、非LEAFは子P集約→S→P→供給へコピー

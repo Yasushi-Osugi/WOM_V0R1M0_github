@@ -1,6 +1,13 @@
 
 #250114gui_app.py
 # gui/app.py
+
+# pysi/gui/app.py の先頭あたりに追加
+from pathlib import Path
+from typing import Optional
+
+
+
 # ********************************
 # library import
 # ********************************
@@ -82,6 +89,8 @@ from pysi.scenario.store import save_run_results, list_runs
 from pysi.scenario.store import list_scenarios, get_db_path_from
 from pysi.evaluate.offering_price import build_offering_price_frame
 
+from pysi.io.psi_state_io import export_psi_state
+from pysi.io.psi_state_loader import load_psi_state, PsiStatePlanEnv
 
 
 # ***************************
@@ -124,6 +133,8 @@ except Exception:
             "Mfg Overhead":      float(row.get("manufacturing_overhead", 0.0)),
             "Profit":            float(row.get("profit", 0.0)),
         }
+    
+
 # ********************************
 # Planning Engine
 # ********************************
@@ -131,6 +142,25 @@ from pysi.plan.engines import run_engine
 from pysi.plan import engines as eng
 #@NO USE
 # from pysi.network.node_base import eval_supply_chain_cost
+
+
+
+
+# ********************************
+# Scenario Handling
+# ********************************
+from pysi.scenario.loader import (
+    discover_scenarios,
+    find_scenario_by_id,
+    ScenarioRecord,
+)
+
+from pysi.scenario.index import discover_scenarios, find_scenario_by_id
+
+
+
+
+
 # ********************************
 # Definition start
 # ********************************
@@ -968,6 +998,7 @@ def is_picklable(value):
     except (pickle.PicklingError, TypeError):
         return False
     return True
+
 class PSIPlannerApp4save:
     #def __init__(self, root):
     def __init__(self):
@@ -1234,6 +1265,7 @@ def set_df_Plots2psi4supply(nodes_outbound: dict, df_weekly: pd.DataFrame, plan_
             continue
         # psi4supply[w][3] = Production Lots
         node.psi4supply[week_index][3].extend(lot_ids)
+
 from collections import defaultdict
 from typing import Dict, List, Tuple
 def perform_allocation(node, demand_map: Dict[int, List[str]], supply_weeks: List[Dict], lot_links_enabled=True) -> Tuple[Dict[int, List[str]], List[Dict], List[str]]:
@@ -1290,21 +1322,93 @@ def perform_allocation(node, demand_map: Dict[int, List[str]], supply_weeks: Lis
 # *******************************************
 # End of P_month_data.csv 2 weekly 2 allocation
 # *******************************************
+
+
+
+
+def link_planning_nodes_to_gui_sku(product_tree_root, gui_node_dict, product_name):
+    """
+    product_tree_root: 計算用Node（product別）
+    gui_node_dict: GUI上の全ノード（node.name -> Nodeインスタンス）
+    product_name: 対象製品名（'JPN_Koshihikari'など）
+    SKUオブジェクトに計算ノード（Node）のポインタを渡す
+    """
+    def traverse_and_link(plan_node):
+        gui_node = gui_node_dict.get(plan_node.name)
+        if gui_node is not None:
+            #@250728 STOP
+            #sku = gui_node.sku_dict.get(product_name)
+            #if sku:
+            #    #計算ノードへのリンク
+            #    sku.psi_node_ref = plan_node
+            #@250728 GO
+            gui_node.sku_dict[product_name] = plan_node # Plan2GUI direct setting
+        for child in plan_node.children:
+            traverse_and_link(child)
+    traverse_and_link(product_tree_root)
+
+
+
+
+
+
+
+
+
+
+
+
+
 # gui/app.py
 class PSIPlannerApp:
     def __init__(self, root, config, psi_env):
         self.root = root
         self.config = config
         self.root.title(self.config.APP_NAME)
+
         # === 追加: backend 環境 ===
         self.psi = psi_env  # PlanEnv or SqlPlanEnv
         self.psi_env = psi_env  # PlanEnv or SqlPlanEnv
         #self.psi = psi_env = PlanEnv(cfg) # PlanEnv or SqlPlanEnv
+
         #@250821 ADD {product_name:root_node,,,,}
         self.global_nodes = {**psi_env.global_nodes}
+
         #self.gui_prod_root_OT = {**psi_env.prod_tree_dict_OT}
         #self.gui_prod_root_IN = {**psi_env.prod_tree_dict_IN}
         #self.gui_prod_root_all = {**psi_env.prod_tree_dict_OT, **psi_env.prod_tree_dict_IN}
+        
+
+        # ********        
+        # === NEW: base_dir / scenario_dir ==================================
+        # ********
+        try:
+            # .../pysi/gui/app.py -> parent -> .../pysi -> parent -> repo root
+            self.base_dir = Path(__file__).resolve().parents[2]
+        except Exception:
+            # 念のための fallback
+            self.base_dir = Path(os.getcwd()).resolve()
+
+        # pysi/scenario 以下を前提に
+        self.scenario_dir = self.base_dir / "pysi" / "scenario"
+
+        # インデックス: {"BL": [...], "EC": [...], "MI": [...]}
+        self.scenario_index: dict[str, list[ScenarioRecord]] = {
+            "BL": [],
+            "EC": [],
+            "MI": [],
+        }
+        # 現在選択中のシナリオ
+        self.current_bl: Optional[ScenarioRecord] = None
+        self.current_ec: Optional[ScenarioRecord] = None
+        self.current_mi: Optional[ScenarioRecord] = None
+
+
+
+
+        
+        
+        
         self.info_window = None
         self.tree_structure = None
         # setup_uiの前にproduct selectを初期化
@@ -1323,6 +1427,10 @@ class PSIPlannerApp:
 
         # 必ず setup_ui を先に呼び出す
         self.setup_ui()
+
+        # --- ここ(setup_uiの直後)で Scenario メニューを生やす ---
+        self._init_scenario_menu()
+
 
         # 必要な初期化処理を後から呼び出す
         self.initialize_parameters()
@@ -1399,6 +1507,248 @@ class PSIPlannerApp:
         self._ensure_plan_window()
         # cost_attach
         self.cost_df = None
+
+
+# ********
+# Scenario related definition
+# ********
+    def _scan_scenarios(self) -> None:
+        """
+        pysi/scenario 配下から BL/EC/MI シナリオを読み込んで
+        self.scenario_index に詰める。
+        """
+        if not self.scenario_dir.exists():
+            print("[scenario] scenario_dir not found:", self.scenario_dir)
+            return
+
+        # index.py の discover_scenarios を利用
+        index = discover_scenarios(self.scenario_dir)
+        # 想定: {"BL": [ScenarioRecord...], "EC": [...], "MI": [...]}
+        self.scenario_index.update(index)
+
+
+        # デフォルト選択（あれば）もここでセットしておく
+        if self.scenario_index["BL"] and self.current_bl is None:
+            self.current_bl = self.scenario_index["BL"][0]
+        if self.scenario_index["EC"] and self.current_ec is None:
+            self.current_ec = self.scenario_index["EC"][0]
+        if self.scenario_index["MI"] and self.current_mi is None:
+            self.current_mi = self.scenario_index["MI"][0]
+
+
+
+
+
+
+    def _init_scenario_menu(self) -> None:
+        """メインメニューに 'Scenario' メニューを後付けする."""
+
+        # まずはファイル一覧を読む
+        self._scan_scenarios()
+
+        # すでに menubar がある前提（setup_ui 内で作っているはず）
+        menubar = self.root.nametowidget(self.root["menu"]) \
+            if self.root["menu"] else None
+        if menubar is None:
+            # 念のため保険：ここで新しく作ってしまう
+            menubar = tk.Menu(self.root)
+            self.root.config(menu=menubar)
+
+        self.menu_scenario = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Scenario", menu=self.menu_scenario)
+
+        # BL シナリオ群
+        if self.scenario_index["BL"]:
+            bl_menu = tk.Menu(self.menu_scenario, tearoff=0)
+            for rec in self.scenario_index["BL"]:
+                bl_menu.add_command(
+                    label=rec.label,   # 例: "BL_scenario (rice_2025)"
+                    command=lambda r=rec: self._on_select_bl(r),
+                )
+            self.menu_scenario.add_cascade(label="Baseline (BL)", menu=bl_menu)
+
+        # EC シナリオ群
+        if self.scenario_index["EC"]:
+            ec_menu = tk.Menu(self.menu_scenario, tearoff=0)
+            for rec in self.scenario_index["EC"]:
+                ec_menu.add_command(
+                    label=rec.label,
+                    command=lambda r=rec: self._on_select_ec(r),
+                )
+            self.menu_scenario.add_cascade(label="External (EC)", menu=ec_menu)
+
+        # MI シナリオ群
+        if self.scenario_index["MI"]:
+            mi_menu = tk.Menu(self.menu_scenario, tearoff=0)
+            for rec in self.scenario_index["MI"]:
+                mi_menu.add_command(
+                    label=rec.label,
+                    command=lambda r=rec: self._on_select_mi(r),
+                )
+            self.menu_scenario.add_cascade(label="Mgmt Integrated (MI)", menu=mi_menu)
+
+        # 状態表示用に separator + 現在選択中の summary みたいな item を入れても良いです
+        self.menu_scenario.add_separator()
+        self.menu_scenario.add_command(
+            label="Show current scenario...",
+            command=self._show_current_scenario_dialog,
+        )
+
+    # --- シナリオ選択ハンドラ（中身はとりあえず state 更新だけでもOK） ----
+
+    def _on_select_bl(self, rec: ScenarioRecord) -> None:
+        self.current_bl = rec
+        print("[SCENARIO] BL selected:", rec.file_name)
+        # TODO: ここで env / KPI / constraints への反映に進んでいく
+
+    def _on_select_ec(self, rec: ScenarioRecord) -> None:
+        self.current_ec = rec
+        print("[SCENARIO] EC selected:", rec.file_name)
+
+    def _on_select_mi(self, rec: ScenarioRecord) -> None:
+        self.current_mi = rec
+        print("[SCENARIO] MI selected:", rec.file_name)
+
+    def _show_current_scenario_dialog(self) -> None:
+        # まずは print だけでも良いし、簡単な tk.Toplevel でもOK
+        print("==== Current Scenario Set ====")
+        print("BL:", getattr(self.current_bl, "file_name", None))
+        print("EC:", getattr(self.current_ec, "file_name", None))
+        print("MI:", getattr(self.current_mi, "file_name", None))
+
+    # 2-5. インデックス更新ロジック
+    def _refresh_scenario_index(self):
+        """pysi/scenario/ 配下の *_scenario.json を再スキャン."""
+        #if not os.path.isdir(self.scenario_dir):
+        #    print(f"[scenario] scenario_dir not found: {self.scenario_dir}")
+
+        if not self.scenario_dir.exists():
+            print(f"[scenario] scenario_dir not found: {self.scenario_dir}")
+            return
+
+        self.scenario_index = discover_scenarios(self.scenario_dir)
+
+        print("[scenario] BL:", [r.id for r in self.scenario_index["BL"]])
+        print("[scenario] EC:", [r.id for r in self.scenario_index["EC"]])
+        print("[scenario] MI:", [r.id for r in self.scenario_index["MI"]])
+
+    #3. Scenario Selector の GUI モック
+    #3-1. セレクタウィンドウを開く
+    def _open_scenario_selector(self):
+        """BL / EC / MI をコンボボックスで選ぶ簡易ダイアログ."""
+        # 最新状態にしておく
+        self._refresh_scenario_index()
+
+        win = tk.Toplevel(self.root)
+        win.title("Select Scenario (BL / EC / MI)")
+        win.geometry("480x260")
+
+        # ---- BL -------------------------------------------------------------
+        frm_bl = tk.LabelFrame(win, text="Base Line (BL_scenario)", padx=8, pady=8)
+        frm_bl.pack(fill=tk.X, padx=10, pady=5)
+
+        bl_ids = [rec.id for rec in self.scenario_index["BL"]]
+        self.var_bl_scenario = tk.StringVar(value=self.current_bl.id if self.current_bl else "")
+        lbl_bl = tk.Label(frm_bl, text="BL Scenario ID:")
+        lbl_bl.pack(side=tk.LEFT)
+        cb_bl = ttk.Combobox(frm_bl, textvariable=self.var_bl_scenario, values=bl_ids, width=35)
+        cb_bl.pack(side=tk.LEFT, padx=5)
+
+        # ---- EC -------------------------------------------------------------
+        frm_ec = tk.LabelFrame(win, text="External Changes (EC_scenario)", padx=8, pady=8)
+        frm_ec.pack(fill=tk.X, padx=10, pady=5)
+
+        ec_ids = [rec.id for rec in self.scenario_index["EC"]]
+        self.var_ec_scenario = tk.StringVar(value=self.current_ec.id if self.current_ec else "")
+        lbl_ec = tk.Label(frm_ec, text="EC Scenario ID:")
+        lbl_ec.pack(side=tk.LEFT)
+        cb_ec = ttk.Combobox(frm_ec, textvariable=self.var_ec_scenario, values=ec_ids, width=35)
+        cb_ec.pack(side=tk.LEFT, padx=5)
+
+        # ---- MI -------------------------------------------------------------
+        frm_mi = tk.LabelFrame(win, text="Management Intent (MI_scenario)", padx=8, pady=8)
+        frm_mi.pack(fill=tk.X, padx=10, pady=5)
+
+        mi_ids = [rec.id for rec in self.scenario_index["MI"]]
+        self.var_mi_scenario = tk.StringVar(value=self.current_mi.id if self.current_mi else "")
+        lbl_mi = tk.Label(frm_mi, text="MI Scenario ID:")
+        lbl_mi.pack(side=tk.LEFT)
+        cb_mi = ttk.Combobox(frm_mi, textvariable=self.var_mi_scenario, values=mi_ids, width=35)
+        cb_mi.pack(side=tk.LEFT, padx=5)
+
+        # ---- ボタン ---------------------------------------------------------
+        frm_btn = tk.Frame(win)
+        frm_btn.pack(fill=tk.X, padx=10, pady=10)
+
+        btn_apply = tk.Button(frm_btn, text="Apply", command=lambda: self._apply_selected_scenarios(win))
+        btn_apply.pack(side=tk.RIGHT, padx=5)
+
+        btn_cancel = tk.Button(frm_btn, text="Cancel", command=win.destroy)
+        btn_cancel.pack(side=tk.RIGHT, padx=5)
+
+    #3-2. Apply 時の処理（まだ「モック」として軽め）
+    def _apply_selected_scenarios(self, dialog_win):
+        bl_id = self.var_bl_scenario.get().strip()
+        ec_id = self.var_ec_scenario.get().strip()
+        mi_id = self.var_mi_scenario.get().strip()
+
+        # 選択された ID からレコードを引く
+        bl_rec = find_scenario_by_id(self.scenario_index, "BL", bl_id) if bl_id else None
+        ec_rec = find_scenario_by_id(self.scenario_index, "EC", ec_id) if ec_id else None
+        mi_rec = find_scenario_by_id(self.scenario_index, "MI", mi_id) if mi_id else None
+
+        # ここでは必須条件を「BL は必須、それ以外は任意」と仮定
+        if not bl_rec:
+            messagebox.showwarning("Scenario", "BL_scenario が選択されていません。")
+            return
+
+        self.current_bl = bl_rec
+        self.current_ec = ec_rec
+        self.current_mi = mi_rec
+
+        print("[scenario] BL set to:", self.current_bl.id)
+        print("[scenario] EC set to:", self.current_ec.id if self.current_ec else None)
+        print("[scenario] MI set to:", self.current_mi.id if self.current_mi else None)
+
+        # 将来的にはここで：
+        #  - BL/EC/MI を PlanEnv や Optimizer に反映
+        #  - psi_state / constraint / KPI ウェイトを更新
+        # などを行う。
+        # 今はモックとして、情報だけセットしておく。
+
+        messagebox.showinfo("Scenario", "Scenario selection applied.\nBL: {0}\nEC: {1}\nMI: {2}".format(
+            self.current_bl.id,
+            self.current_ec.id if self.current_ec else "-",
+            self.current_mi.id if self.current_mi else "-"
+        ))
+
+        if dialog_win is not None:
+            dialog_win.destroy()
+
+        # フックポイント：シナリオ変更後の再評価・再描画など
+        try:
+            self.on_scenario_changed()
+        except AttributeError:
+            # まだ実装していなければ無視
+            pass
+
+    # OPTION
+    def on_scenario_changed(self):
+        """
+        BL/EC/MI が更新されたあとに呼ばれるフック。
+        - PSI / Optimizer に対してパラメータ再適用
+        - GUI のラベル更新
+        などをここで将来実装。
+        """
+        print("[scenario] on_scenario_changed: BL={0}, EC={1}, MI={2}".format(
+            self.current_bl.id if self.current_bl else None,
+            self.current_ec.id if self.current_ec else None,
+            self.current_mi.id if self.current_mi else None,
+        ))
+# ********
+# End of Scenario Definition
+# ********
+
 
 
     def _set_network_title(self):
@@ -1652,6 +2002,7 @@ class PSIPlannerApp:
     #        yield n
     #        for c in getattr(n, "children", []) or []:
     #            stack.append(c)
+
     def _walk_nodes(self, root, order: str = "post"):
         """
         木の走査ヘルパ
@@ -1686,6 +2037,7 @@ class PSIPlannerApp:
             for c in reversed(ch):
                 st.append(c)
         return out
+    
     def _apply_selected_product(self, prod: str):
         """env から root/out/in・ノード集合・葉集合を self.* に反映"""
         # 1) root を取得（SqlPlanEnv でも PlanEnv でもOK）
@@ -1728,6 +2080,7 @@ class PSIPlannerApp:
         # デバッグ
         if self.root_node_outbound is None:
             print(f"[WARN] root_node_outbound is None for product={prod}")
+
     # --- Matplotlib Axes の確保（無ければ作る） ---
     def _ensure_network_axes(self, parent=None):
         if getattr(self, "canvas_network", None) and self.canvas_network.get_tk_widget().winfo_exists():
@@ -1741,6 +2094,7 @@ class PSIPlannerApp:
         self.fig_network   = fig
         self.ax_network    = ax
         self.canvas_network= cv
+
     # PSIPlannerApp クラス内に1本だけ
     def _ensure_psi_area(self, parent):
         import tkinter as tk
@@ -2218,7 +2572,9 @@ class PSIPlannerApp:
         """
         # ---- HookBus（無ければ NOOP） ----
         try:
-            from pysi.hooks.core import hooks as _hooks
+            from pysi.core.hooks.core import hooks as _hooks
+            #from pysi.hooks.core import hooks as _hooks
+
         except Exception:
             class _Noop:
                 def do_action(self, *a, **k):  # フォールバック
@@ -4316,7 +4672,11 @@ class PSIPlannerApp:
             file_menu.add_command(label="OPEN: select Directory", command=self.load_data_files)
             file_menu.add_separator()
             file_menu.add_command(label="SAVE: to Directory", command=self.save_to_directory)
-            file_menu.add_command(label="LOAD: from Directory", command=self.load_from_directory)
+
+            #@251126 UODATE for load_PSI_state()
+            file_menu.add_command(label="LOAD: from Directory", command=self.load_psi_state_from_directory)
+            #file_menu.add_command(label="LOAD: from Directory", command=self.load_from_directory)
+
         file_menu.add_separator()
         file_menu.add_command(label="EXIT", command=self.on_exit)
         menubar.add_cascade(label=" FILE  ", menu=file_menu)
@@ -4613,6 +4973,165 @@ class PSIPlannerApp:
         except Exception as e:
             print("[WARN] initial psi overview:", e)
 
+
+
+
+    def auto_export_psi_state(self, plan_env, save_dir, logger=None):
+        """
+        plan_env があればそれを優先して PSI state を export。
+        無ければ GUI 側の prod_tree_dict_OT/IN をフォールバックで使用。
+        logger が None の場合は print ベースの簡易ロガーを使う。
+        """
+        # --- logger のフォールバック --------------------
+        if logger is None:
+            class _DummyLogger:
+                def info(self, msg):  print(msg)
+                def warning(self, msg):  print("[WARN]", msg)
+                def error(self, msg):  print("[ERROR]", msg)
+            logger = _DummyLogger()
+        # -------------------------------------------------
+
+        # 1) physical tree
+        physical_out = getattr(self, "root_node_out_opt", None) \
+                    or getattr(self, "root_node_outbound", None)
+        physical_in  = getattr(self, "root_node_inbound", None)
+
+        # 2) product trees
+        if plan_env is not None:
+            prod_roots_out = getattr(plan_env, "prod_tree_dict_OT", {}) or {}
+            prod_roots_in  = getattr(plan_env, "prod_tree_dict_IN", {}) or {}
+            logger.info("[psi_state] using SqlPlanEnv.prod_tree_dict_*")
+        else:
+            prod_roots_out = getattr(self, "prod_tree_dict_OT", {}) or {}
+            prod_roots_in  = getattr(self, "prod_tree_dict_IN", {}) or {}
+
+            if not prod_roots_out:
+                logger.warning("[psi_state] fallback prod_tree empty; skipped")
+                return
+
+            logger.info("[psi_state] fallback: GUI prod_tree_dict_OT/IN used")
+
+        # 3) parameters / meta
+        weeks = int(getattr(self, "plan_range", 0)) * 53
+
+        params = {
+            "calendar": {
+                "year_start": getattr(self, "plan_year_st", getattr(self, "plan_year_start", 2024)),
+                "weeks": weeks,
+                "lot_size": getattr(self, "lot_size", 1000),
+                "pre_prod_weeks": getattr(self, "pre_proc_LT", 0),
+            },
+            "scenario": {
+                "scenario_id": getattr(self, "current_scenario_id", "SCN_DEFAULT"),
+                "plugins": list(self.active_plugin_names()) if hasattr(self, "active_plugin_names") else [],
+            },
+        }
+
+        meta = {
+            "created_at": self.get_iso_timestamp() if hasattr(self, "get_iso_timestamp") else "",
+            "wom_version": self.get_wom_version() if hasattr(self, "get_wom_version") else "",
+            "code_hash": self.get_git_hash() if hasattr(self, "get_git_hash") else "",
+            "psi_state_id": getattr(self, "current_psi_state_id", "PSI_STATE_SNAPSHOT"),
+            "notes": "auto_export_psi_state triggered",
+        }
+
+        # 4) export 実行
+        state_hash = export_psi_state(
+            save_dir,
+            physical_out,
+            physical_in,
+            prod_roots_out,
+            prod_roots_in,
+            weeks,
+            params,
+            meta,
+        )
+        logger.info(f"[psi_state] export completed: {state_hash}")
+
+
+
+
+
+
+
+    # inside class PSIPlannerApp:
+
+    def auto_export_psi_state_OLD(self, plan_env, save_dir, logger):
+        """
+        plan_env があればそれを優先して PSI state を export。
+        無ければ GUI 側の prod_tree_dict_OT/IN をフォールバックで使用。
+        """
+
+        # 1) physical tree (GUI has)
+        physical_out = getattr(self, "root_node_out_opt", None) \
+                    or getattr(self, "root_node_outbound", None)
+        physical_in  = getattr(self, "root_node_inbound", None)
+
+        # 2) product trees
+        if plan_env is not None:
+            prod_roots_out = getattr(plan_env, "prod_tree_dict_OT", {}) or {}
+            prod_roots_in  = getattr(plan_env, "prod_tree_dict_IN", {}) or {}
+            logger.info("[psi_state] using SqlPlanEnv.prod_tree_dict_*")
+        else:
+            prod_roots_out = getattr(self, "prod_tree_dict_OT", {}) or {}
+            prod_roots_in  = getattr(self, "prod_tree_dict_IN", {}) or {}
+
+            if not prod_roots_out:
+                logger.warning("[psi_state] fallback prod_tree empty; skipped")
+                return
+
+            logger.info("[psi_state] fallback: GUI prod_tree_dict_OT/IN used")
+
+        # 3) parameters / meta
+        weeks = int(getattr(self, "plan_range", 0)) * 53
+
+        params = {
+            "calendar": {
+                "year_start": getattr(self, "plan_year_st", getattr(self, "plan_year_start", 2024)),
+                "weeks": weeks,
+                "lot_size": getattr(self, "lot_size", 1000),
+                "pre_prod_weeks": getattr(self, "pre_proc_LT", 0),
+            },
+            "scenario": {
+                "scenario_id": getattr(self, "current_scenario_id", "SCN_DEFAULT"),
+                "plugins": list(self.active_plugin_names()) if hasattr(self, "active_plugin_names") else [],
+            },
+        }
+
+        meta = {
+            "created_at": self.get_iso_timestamp() if hasattr(self, "get_iso_timestamp") else "",
+            "wom_version": self.get_wom_version() if hasattr(self, "get_wom_version") else "",
+            "code_hash": self.get_git_hash() if hasattr(self, "get_git_hash") else "",
+            "psi_state_id": getattr(self, "current_psi_state_id", "PSI_STATE_SNAPSHOT"),
+            "notes": "auto_export_psi_state triggered",
+        }
+
+        # 4) export
+        state_hash = export_psi_state(
+            save_dir,
+            physical_out,
+            physical_in,
+            prod_roots_out,
+            prod_roots_in,
+            weeks,
+            params,
+            meta,
+        )
+        logger.info(f"[psi_state] export completed: {state_hash}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     def _ensure_cost_df(self):
         if getattr(self, "cost_df", None) is not None:
             return self.cost_df
@@ -4901,6 +5420,7 @@ class PSIPlannerApp:
                 #prod_tree_dict_OT[prod_nm] = build_prod_tree_from_csv(csv_data, prod_nm)
                 #prod_tree_dict_IN[prod_nm] = build_prod_tree_from_csv(csv_data, prod_nm)
                 #@250726 MEMO by Productでroot_nodeとnodesを生成後、
+                
                 # PlanNodeのroot_nodeからselfたどって? self.xxxとしてセットする
                 def make_leaf_nodes(node, list):
                     if node.children == []: # leaf_nodeの場合
@@ -4973,6 +5493,8 @@ class PSIPlannerApp:
                 #set_positions(root_node_inbound)
                 #set_parent_all(root_node_inbound)
                 #print_parent_all(root_node_inbound)
+
+
             # **************************
             # GUI-計算構造のリンク
             # **************************
@@ -4985,32 +5507,37 @@ class PSIPlannerApp:
             #@250728 GO
             # sku_dict[product_name]	gui_nodeのby product(SKU単位)で、ここにplan_nodeを直接セット
             # "plan_node=sku"という意味合い
-            def link_planning_nodes_to_gui_sku(product_tree_root, gui_node_dict, product_name):
-                """
-                product_tree_root: 計算用Node（product別）
-                gui_node_dict: GUI上の全ノード（node.name -> Nodeインスタンス）
-                product_name: 対象製品名（'JPN_Koshihikari'など）
-                SKUオブジェクトに計算ノード（Node）のポインタを渡す
-                """
-                def traverse_and_link(plan_node):
-                    gui_node = gui_node_dict.get(plan_node.name)
-                    if gui_node is not None:
-                        #@250728 STOP
-                        #sku = gui_node.sku_dict.get(product_name)
-                        #if sku:
-                        #    #計算ノードへのリンク
-                        #    sku.psi_node_ref = plan_node
-                        #@250728 GO
-                        gui_node.sku_dict[product_name] = plan_node # Plan2GUI direct setting
-                    for child in plan_node.children:
-                        traverse_and_link(child)
-                traverse_and_link(product_tree_root)
+
+            #def link_planning_nodes_to_gui_sku(product_tree_root, gui_node_dict, product_name):
+            #    """
+            #    product_tree_root: 計算用Node（product別）
+            #    gui_node_dict: GUI上の全ノード（node.name -> Nodeインスタンス）
+            #    product_name: 対象製品名（'JPN_Koshihikari'など）
+            #    SKUオブジェクトに計算ノード（Node）のポインタを渡す
+            #    """
+            #    def traverse_and_link(plan_node):
+            #        gui_node = gui_node_dict.get(plan_node.name)
+            #        if gui_node is not None:
+            #            #@250728 STOP
+            #            #sku = gui_node.sku_dict.get(product_name)
+            #            #if sku:
+            #            #    #計算ノードへのリンク
+            #            #    sku.psi_node_ref = plan_node
+            #            #@250728 GO
+            #            gui_node.sku_dict[product_name] = plan_node # Plan2GUI direct setting
+            #        for child in plan_node.children:
+            #            traverse_and_link(child)
+            #    traverse_and_link(product_tree_root)
+
+
             for prod_nm in product_name_list:
                 link_planning_nodes_to_gui_sku(prod_tree_dict_OT[prod_nm], nodes_outbound, prod_nm)
                 link_planning_nodes_to_gui_sku(prod_tree_dict_IN[prod_nm], nodes_inbound, prod_nm)
+
             # save to self.xxx
             self.prod_tree_dict_OT = prod_tree_dict_OT
             self.prod_tree_dict_IN = prod_tree_dict_IN
+
             # 検証表示
             for prod_nm in product_name_list:
                 print("検証表示product_nm 4 subtree", prod_nm )
@@ -5027,6 +5554,7 @@ class PSIPlannerApp:
             # setting cost parameters
             # **************************************
             #@250719 ADD
+
             def load_cost_param_csv(filepath):
                 import csv
                 param_dict = {}
@@ -5063,6 +5591,7 @@ class PSIPlannerApp:
                             # ... 他の詳細項目も追加可
                         }
                 return param_dict
+
             if "sku_cost_table_outbound.csv" in data_file_list:
                 cost_param_OT_dict = load_cost_param_csv(os.path.join(directory, "sku_cost_table_outbound.csv"))
                 print("cost_param_OT_dict", cost_param_OT_dict)
@@ -5314,8 +5843,10 @@ class PSIPlannerApp:
         # _init_ self.product_selected = self.product_name_list[0]
         #product_name = self.product_selected
         product_name = self.product_name_list[1]
+
         # PSI area
         self.root.after(1000, self.show_psi_by_product("outbound", "demand", product_name))
+
         #@STOP
         ## PSI area
         ##self.root.after(1000, self.show_psi("outbound", "supply"))
@@ -5336,6 +5867,7 @@ class PSIPlannerApp:
         # passing following process
         # ****************************
         pass
+
 # **** A PART of ORIGINAL load_data_files END *****
 # **** call_backs *****
     def save_data(self, save_directory):
@@ -5348,7 +5880,105 @@ class PSIPlannerApp:
         with open(os.path.join(save_directory, 'psi_planner_app.pkl'), "wb") as f:
             pickle.dump(psi_planner_app_save.__dict__, f)
         print("データを保存しました。")
+
+
+
     def save_to_directory(self):
+        # 1. Save先ディレクトリ
+        save_directory = filedialog.askdirectory()
+        if not save_directory:
+            return
+
+        # 2. 初期 CSV のコピー（従来どおり）
+        for filename in os.listdir(self.directory):
+            if filename.endswith(".csv"):
+                src = os.path.join(self.directory, filename)
+                if os.path.isfile(src):
+                    shutil.copy(src, save_directory)
+
+        # 3. PSI_State v1 の export
+        # 3-1. physical roots
+        physical_out = getattr(self, "root_node_out_opt", None)
+        physical_in  = getattr(self, "root_node_inbound", None)
+
+        # 3-2. multi-product plan roots (SqlPlanEnv 相当)
+        plan_env = getattr(self, "plan_env", None)
+
+
+        #@251125 ADD
+        # app: PSIPlannerApp インスタンス
+        # plan_env: mvp では None / SQL 版では SqlPlanEnv
+        # save_dir: 出力したいディレクトリ（既にどこかで決めているはず）
+
+        plan_env = getattr(self, "plan_env", None)
+        logger = getattr(self, "logger", None)  # あれば渡す、無ければ None
+        self.auto_export_psi_state(plan_env, save_directory, logger)
+
+        #self.auto_export_psi_state(plan_env, save_directory, logger=None)
+        ##self.auto_export_psi_state(plan_env, save_dir, logger=None)
+
+
+        #@251125 STOP
+        #if plan_env is None:
+        #    # 旧 CSV 版などで plan_env が無い場合はフォールバックして何もしない
+        #    print("[WARN] plan_env is None; psi_state export skipped.")
+        #else:
+        #    prod_roots_out = getattr(plan_env, "prod_tree_dict_OT", {})
+        #    prod_roots_in  = getattr(plan_env, "prod_tree_dict_IN", {})
+        #
+        #    weeks = int(self.plan_range) * 53  # 例: 3年 → 159 週
+        #
+        #    params = {
+        #        "calendar": {
+        #            "year_start": int(getattr(self, "plan_year_start", 2024)),
+        #            "weeks": weeks,
+        #            "lot_size": int(getattr(self, "lot_size", 1000)),
+        #            "pre_prod_weeks": int(getattr(self, "pre_proc_LT", 0)),
+        #        },
+        #        "scenario": {
+        #            "scenario_id": getattr(self, "current_scenario_id", "UNKNOWN"),
+        #            "description": "",
+        #            "plugins": list(getattr(self, "active_plugin_names", lambda: [])()),
+        #        },
+        #    }
+        #
+        #    meta = {
+        #        "created_at": getattr(self, "get_iso_timestamp", lambda: "")(),
+        #        "wom_version": getattr(self, "get_wom_version", lambda: "")(),
+        #        "code_hash": getattr(self, "get_git_hash", lambda: "")(),
+        #        "psi_state_id": getattr(self, "current_psi_state_id", "UNNAMED_STATE"),
+        #        "notes": "Saved from GUI menu 'SAVE: to Directory'",
+        #    }
+        #
+        #    office_meta = {
+        #        "corporate_HQ": "corporate_HQ",
+        #        "sales_office": "sales_office",
+        #        "production_office": "supply_point",
+        #        "procurement_office": "procurement_office",
+        #    }
+        #
+        #    state_hash = export_psi_state(
+        #        save_directory,
+        #        physical_out,
+        #        physical_in,
+        #        prod_roots_out,
+        #        prod_roots_in,
+        #        weeks,
+        #        params,
+        #        meta,
+        #        office_meta=office_meta,
+        #        fifo_mode="FIFO",
+        #    )
+        #    print(f"[INFO] psi_state saved. state_hash={state_hash}")
+
+        # 4. 完了メッセージ
+        messagebox.showinfo("Save Completed", "Plan data save is completed")
+
+
+
+
+
+    def save_to_directory_OLD(self):
         # 1. Save先となるdirectoryの問い合わせ
         save_directory = filedialog.askdirectory()
         if not save_directory:
@@ -5393,6 +6023,159 @@ class PSIPlannerApp:
                 print(f"{filename} does not exist")
         # 6. 完了メッセージの表示
         messagebox.showinfo("Save Completed", "Plan data save is completed")
+
+
+
+
+
+    def init_planenv_links_from_psi_state(self, plan_env):
+        """psi_stateロード後に、GUI側の派生情報を再構成する"""
+        self.prod_tree_dict_OT = plan_env.prod_tree_dict_OT
+        self.prod_tree_dict_IN = plan_env.prod_tree_dict_IN
+
+        # 親ポインタ
+        for root in self.prod_tree_dict_OT.values():
+            if root: set_parent_all(root)
+        for root in self.prod_tree_dict_IN.values():
+            if root: set_parent_all(root)
+
+        # leaf_nodes
+        self.leaf_nodes_out_by_product = {}
+        self.leaf_nodes_in_by_product = {}
+
+        def collect_leaf_names(root):
+            leaves = []
+            def _walk(n):
+                if not getattr(n, "children", []):
+                    leaves.append(n.name)
+                else:
+                    for c in n.children:
+                        _walk(c)
+            if root:
+                _walk(root)
+            return leaves
+        
+        for prod, root in self.prod_tree_dict_OT.items():
+            self.leaf_nodes_out_by_product[prod] = collect_leaf_names(root)
+        for prod, root in self.prod_tree_dict_IN.items():
+            self.leaf_nodes_in_by_product[prod] = collect_leaf_names(root)
+
+        # ***************
+        # GUIが期待する root ノードをセット（product の先頭を採用）
+        # ***************
+        if hasattr(self, "product_name_list") and self.product_name_list:
+            first = self.product_name_list[0]
+            self.root_node_outbound = self.prod_tree_dict_OT.get(first)
+            self.root_node_inbound  = self.prod_tree_dict_IN.get(first)
+        else:
+            self.root_node_outbound = None
+            self.root_node_inbound  = None
+
+        # 旧GUI互換
+        self.root_node_out_opt = self.root_node_outbound
+
+
+
+
+
+    #@251126 ADD
+    def load_psi_state_from_directory(self):
+        base_dir = filedialog.askdirectory(title="Select psi_state base dir")
+        if not base_dir:
+            return
+
+        logger = getattr(self, "logger", None)
+
+        state = load_psi_state(base_dir, attach_psi=True, logger=logger)
+        plan_env = PsiStatePlanEnv(state)
+
+        # 1) GUI 内の product tree を差し替え
+        #self.prod_tree_dict_OT = plan_env.prod_tree_dict_OT
+        #self.prod_tree_dict_IN = plan_env.prod_tree_dict_IN
+
+        # setting "root OT/IN" "leaf_nodes" "leaf_nodes_out_by_product"
+        self.init_planenv_links_from_psi_state(plan_env)
+
+        self.product_name_list = plan_env.product_name_list
+
+
+
+        # 2) combo box etc.
+        self.cb_product["values"] = self.product_name_list
+        if self.product_name_list:
+            self.cb_product.current(0)
+            self.product_selected = self.product_name_list[0]
+
+        # 3) 必要なら、既存の link_planning_nodes_to_gui_sku(...) を呼ぶ
+        #    （あなたの load_data_files の最後の方で使っている関数）
+        for prod_nm in self.product_name_list:
+            link_planning_nodes_to_gui_sku(self.prod_tree_dict_OT[prod_nm],
+                                           self.nodes_outbound,
+                                           prod_nm)
+            link_planning_nodes_to_gui_sku(self.prod_tree_dict_IN[prod_nm],
+                                           self.nodes_inbound,
+                                           prod_nm)
+
+        # ************
+        # viewer and evaluation
+        # ************
+        # 1. nodes_outboundとnodes_inboundを再生成
+        self.nodes_outbound = self.regenerate_nodes(self.root_node_outbound)
+        self.nodes_inbound = self.regenerate_nodes(self.root_node_inbound)
+
+        #self.nodes_out_opt = self.regenerate_nodes(self.root_node_out_opt)
+        print("load_from_directory self.decouple_node_selected", self.decouple_node_selected)
+
+  
+        # 2. eval area
+        self.update_evaluation_results()
+  
+
+        # 3. ネットワークグラフの描画
+        self.view_nx_matlib4opt()
+
+	    # 4. parameter
+        self.updated_parameters()
+
+        # 5. PSIの表示
+        try:
+            #self.root.after(1000, self.show_psi_graph4opt)
+
+
+            product_name = self.product_name_list[0]
+            self.root.after(
+                1000,
+                lambda: self.show_psi_by_product("outbound", "demand", product_name)
+            )
+
+            #product_name = self.product_name_list[0]
+            #self.root.after(1000, self.show_psi_by_product("outbound", "demand", product_name))
+
+
+        except Exception as e:
+            print("WARN: PSI graph display skipped:", e)
+
+
+
+        #@ STOP
+        #if self.root_node_out_opt == None:
+        #    self.root.after(1000, self.show_psi("outbound", "supply"))
+        #
+        #else:  # is root_node_out_opt
+        #    self.root.after(1000, self.show_psi_graph4opt)
+
+        # 6. Loadingの完了メッセージの表示
+        # messagebox.showinfo("Load Completed", "Plan data load is completed")
+        messagebox.showinfo("PSI State Loaded", f"Loaded PSI state for {len(self.product_name_list)} products.")
+
+
+
+
+
+
+
+
+
     def load_data(self, load_directory):
         with open(os.path.join(load_directory, 'psi_planner_app.pkl'), "rb") as f:
             loaded_attributes = pickle.load(f)
@@ -5429,6 +6212,7 @@ class PSIPlannerApp:
         self.ts_entry.insert(0, f"{self.target_share * 100:.0f}")  # 保存された値を反映
         print(f"読み込み時 - market_potential: {self.market_potential}, target_share: {self.target_share}")  # ログ追加
         print("データをロードしました。")
+    
     def regenerate_nodes(self, root_node):
         nodes = {}
         def traverse(node):
@@ -5437,6 +6221,8 @@ class PSIPlannerApp:
                 traverse(child)
         traverse(root_node)
         return nodes
+    
+
     def load_from_directory(self):
         # 1. Load元となるdirectoryの問い合わせ
         load_directory = filedialog.askdirectory()
@@ -5446,23 +6232,29 @@ class PSIPlannerApp:
         self.load_directory = load_directory
         self.directory      = load_directory # for "optimized network"
         self._load_tree_structure(load_directory)
+  
         # 3. PSIPlannerAppのデータ・インスタンスの読み込み
         self.load_data(load_directory)
+  
         # if "save files" are NOT optimized one
         if os.path.exists(f"{load_directory}/root_node_out_opt.pkl"):
             pass
         else:
             self.flowDict_opt = {}  # NO optimize
+  
         ## 3. PSIPlannerAppのデータ・インスタンスの読み込みと更新
         #self.selective_update(load_directory)
+  
         # 4. nodes_outboundとnodes_inboundを再生成
         self.nodes_outbound = self.regenerate_nodes(self.root_node_outbound)
         self.nodes_inbound = self.regenerate_nodes(self.root_node_inbound)
         #self.nodes_out_opt = self.regenerate_nodes(self.root_node_out_opt)
         print("load_from_directory self.decouple_node_selected", self.decouple_node_selected)
         #@241224 ADD
+  
         # eval area
         self.update_evaluation_results()
+  
         ## 5. ネットワークグラフの描画
         #self.draw_networkx_graph()
         #@ STOP RUN change2OPT
@@ -5487,6 +6279,8 @@ class PSIPlannerApp:
             ##self.initialize_parameters()
         # 7. 完了メッセージの表示
         messagebox.showinfo("Load Completed", "Plan data load is completed")
+
+
     def on_exit(self):
         # 確認ダイアログの表示
         if messagebox.askokcancel("Quit", "Do you really want to exit?"):
@@ -7197,6 +7991,8 @@ class PSIPlannerApp:
         # グラフ描画関数を呼び出し  最適ルートを赤線で表示
         print("load_from_directory self.flowDict_opt", self.flowDict_opt)
         self.draw_network4opt(G, Gdm_structure, Gsp, pos_E2E, self.flowDict_opt)
+
+
     def draw_network4opt(self, G, Gdm, Gsp, pos_E2E, flowDict_opt):
         self.ax_network.clear()  # 図をクリア
         # タイトル設定
@@ -7238,6 +8034,7 @@ class PSIPlannerApp:
         #@STOP
         #plt.close(self.fig_network)  # メモリ解放のため閉じる
         self.canvas_network.mpl_connect('button_press_event', self.on_plot_click)
+
     def make_highlight_flow(self, prod_tree_OT, prod_tree_IN):
         """
         指定された product の tree 構造 (outbound + inbound) の root PlanNode から、
@@ -7261,22 +8058,10 @@ class PSIPlannerApp:
             print("highlight: inbound root =", prod_tree_IN.name)
             walk_tree(prod_tree_IN)
         return highlight_flow
+    
+
     def draw_network4multi_prod(self, G, Gdm, Gsp, pos_E2E, highlight_flow):
-        #@250826 STOP
-        #self._ensure_network_axes()  # ← 保険
-        #ax = self.ax_network
-        #
-        #self.ax_network.clear()  # 図をクリア
-        #
-        ## タイトル設定
-        #total_revenue = round(self.total_revenue)
-        #total_profit = round(self.total_profit)
-        #profit_ratio = round((total_profit / total_revenue) * 100, 1) if total_revenue != 0 else 0
-        #self.ax_network.set_title(
-        #    f'PySI Optimized Supply Chain Network\nREVENUE: {total_revenue:,} | PROFIT: {total_profit:,} | PROFIT_RATIO: {profit_ratio}%',
-        #    fontsize=10
-        #)
-        #self.ax_network.axis('off')
+
         #@250826 ADD
         self._ensure_network_axes()
         ax = self.ax_network
@@ -7288,15 +8073,7 @@ class PSIPlannerApp:
         decouple_set = set(getattr(self, "decouple_node_selected", []) or [])
         # （例）ノード形状の決定で使用している箇所を安全化
         node_shapes = ['v' if node in decouple_set else 'o' for node in G.nodes()]
-        # …以降の描画処理はそのままでOK
-        #@250826 MEMO 実値でタイトルを出したい場合
-        # どこかで集計が終わったタイミング（例：update_evaluation_results() やエンジン実行後）
-        #self.total_revenue = calc_revenue_somehow(...)  # 実際の合計売上
-        #self.total_profit  = calc_profit_somehow(...)   # 実際の合計利益
-        ## ネットワーク再描画 or タイトルだけ更新
-        #self._set_network_title()
-        #if hasattr(self, "canvas_network"):
-        #    self.canvas_network.draw_idle()
+
         # ノードの形状と色
         node_shapes = ['v' if node in self.decouple_node_selected else 'o' for node in G.nodes()]
         node_colors = ['brown' if node in self.decouple_node_selected else 'lightblue' for node in G.nodes()]
@@ -7314,15 +8091,7 @@ class PSIPlannerApp:
             else:
                 edge_color = 'lightgrey'
             nx.draw_networkx_edges(G, pos_E2E, edgelist=[edge], edge_color=edge_color, arrows=False, ax=self.ax_network, width=0.5)
-        #@STOP
-        ## 最適化パス（赤線）
-        #for from_node, flows in flowDict_opt.items():
-        #    for to_node, flow in flows.items():
-        #        if flow > 0:
-        #            nx.draw_networkx_edges(self.G, pos_E2E, edgelist=[(from_node, to_node)], ax=self.ax_network, edge_color='red', arrows=False, width=0.5)
-        #@ STOP 描画関数の外に出す
-        ## red line 描画用 flow 構造に変換
-        #highlight_flow = self.make_highlight_flow(prod_tree_OT, prod_tree_IN)
+
         # flow に従って赤線を描画
         for from_node, flows in highlight_flow.items():
             for to_node, flow in flows.items():
@@ -7344,6 +8113,8 @@ class PSIPlannerApp:
         #@STOP
         #plt.close(self.fig_network)  # メモリ解放のため閉じる
         self.canvas_network.mpl_connect('button_press_event', self.on_plot_click)
+
+
     def show_info_graph(self, node_info, select_node):
         # 既存のウィンドウを再利用または作成
         if self.info_window is None or not tk.Toplevel.winfo_exists(self.info_window):
@@ -8838,13 +9609,18 @@ class PSIPlannerApp:
                     self.inbound_data.append(pd.read_csv(filepath))
         print("Outbound files loaded.")
         print("Inbound files loaded.")
+
     # *************************
     # PSI graph
     # *************************
     def show_psi_by_product(self, bound, layer, product_name):
         self._ensure_plan_window()
-        self._ensure_psi_area()      # ← これを追加
+
+        #@251126 UPDATE
+        self._ensure_psi_area(self.frame_psi)      # ← これを追加
+        #self._ensure_psi_area()      
         print("making by product PSI graph data...")
+        
         week_start = 1
         week_end = self.plan_range * 53
         psi_data = []
@@ -8981,6 +9757,8 @@ class PSIPlannerApp:
         # 既存凡例と結合（重なりを避けて右上へ）
         h0, l0 = ax.get_legend_handles_labels()
         ax.legend(h0+handles, l0+labels, loc="upper right", fontsize=8, frameon=True)
+
+
     # --- 1) 世界地図ビュー -------------------------------------------
     def _iter_parent_child(self, root):
         """PlanNodeツリーから(parent, child)のタプルを列挙（製品エッジ抽出に使用）。"""
@@ -8992,6 +9770,8 @@ class PSIPlannerApp:
             for c in getattr(n, "children", []) or []:
                 yield (n, c)
                 stack.append(c)
+
+
     def show_psi_graph(self):
         print("making PSI graph data...")
         self._ensure_plan_window()
@@ -9382,6 +10162,8 @@ class PSIPlannerApp:
             canvas.mpl_connect("motion_notify_event",  self._on_map_motion),
             canvas.mpl_connect("button_release_event", self._on_map_release),
         ]
+
+
     def _clear_map_highlights(self):
         """注釈・ハイライトを消す"""
         for art in getattr(self, "_map_highlight_artists", []):
@@ -9395,19 +10177,7 @@ class PSIPlannerApp:
             self._map_anno_artist = None
         if hasattr(self, "canvas_network"):
             self.canvas_network.draw_idle()
-    def _clear_map_highlights(self):
-        """注釈・ハイライトを消す"""
-        for art in getattr(self, "_map_highlight_artists", []):
-            try: art.remove()
-            except Exception: pass
-        self._map_highlight_artists = []
-        ann = getattr(self, "_map_anno_artist", None)
-        if ann is not None:
-            try: ann.remove()
-            except Exception: pass
-            self._map_anno_artist = None
-        if hasattr(self, "canvas_network"):
-            self.canvas_network.draw_idle()
+
     def _on_map_press(self, event):
         """
         [新規] マウスボタンが押された時の処理
@@ -9551,6 +10321,8 @@ class PSIPlannerApp:
         self._map_highlight_artists = [ring, anno]
         if hasattr(self, "canvas_network"):
             self.canvas_network.draw_idle()
+
+
     def _on_map_click(self, event):
         """左クリック：最寄りノードに注釈 + ハイライト（既存のコードを流用）"""
         ax = getattr(self, "_map_ax", None)
@@ -9603,6 +10375,7 @@ class PSIPlannerApp:
         self._map_highlight_artists = [ring, anno]
         if hasattr(self, "canvas_network"):
             self.canvas_network.draw_idle()
+
     def _on_map_scroll_1st(self, event):
         """マウスホイール：カーソル位置を中心にズーム。
         Cartopy ではピクセル空間で拡大縮小してから lon/lat に戻すので縦が潰れません。
@@ -10034,6 +10807,7 @@ class PSIPlannerApp:
                 self._set_basemap_lod_from_extent()
         except Exception:
             pass
+
     def _on_map_scroll(self, event):
         """
         [修正] ホイール：カーソル位置を中心にズーム（投影座標で一貫処理）
@@ -10074,6 +10848,7 @@ class PSIPlannerApp:
             ax.set_ylim(new_ymin, new_ymax)
         if hasattr(self, "canvas_network"):
             self.canvas_network.draw_idle()
+
     def _on_map_key(self, event):
         """f=選択品目にフィット, a=全ノード, w=世界全体, esc=ハイライト消し"""
         if event.key == "escape":
@@ -10396,6 +11171,7 @@ class PSIPlannerApp:
         # 最後に再描画をかけてレイアウトを更新
         if hasattr(self, "canvas_network"):
             self.canvas_network.draw_idle()
+
 # [最終修正 ver.2] _on_map_key を「水平フォーカス調整」に対応
     def _on_map_key(self, event):
         """[修正] f=選択品目, a=全ノード, w=世界全体, esc=ハイライト消し"""
@@ -10574,6 +11350,7 @@ class PSIPlannerApp:
                     self._fit_lonlat(lons, lats, edges=highlight_edges)
         if hasattr(self, "canvas_network"):
             self.canvas_network.draw_idle()
+
     def _fit_lonlat(self, lons, lats, edges=None):
         """
         緯度（縦）を枠いっぱいにフィット。
@@ -10634,6 +11411,7 @@ class PSIPlannerApp:
         ax.set_extent([proj_x0, proj_x1, proj_y0, proj_y1], crs=map_crs)
         if hasattr(self, "canvas_network"):
             self.canvas_network.draw_idle()
+
     # --- マウス押下：右ボタンならパン開始、左は既存のクリック処理へ委譲 ---
     # 右ボタンだけでパンを開始（左はここでは処理しない）
     def _on_map_button(self, event):
@@ -10804,6 +11582,7 @@ class PSIPlannerApp:
             for c in getattr(n, "children", []):
                 dfs(c)
         dfs(root)
+
     def show_world_map(self, product_name=None):
         """
         世界地図ビュー（太平洋中心）。選択製品の OUT=青 / IN=緑 を色分け。
@@ -11004,6 +11783,7 @@ class PSIPlannerApp:
                 lons = [lon for lon, _ in pos.values()]
                 lats = [lat for _, lat in pos.values()]
                 self._fit_lonlat(lons, lats, edges=None)
+
     def _install_map_interactions(self):
         """
         [修正] 投影座標系で動作する安定したパンとズームを接続する
@@ -11027,6 +11807,7 @@ class PSIPlannerApp:
             canvas.mpl_connect("scroll_event", self._on_map_scroll),
             canvas.mpl_connect("key_press_event", self._on_map_key),
         ]
+
     def _event_lonlat(self, event):
         """イベント位置を (lon, lat) に変換。Axes 外や変換失敗は None を返す。"""
         ax = getattr(self, "_map_ax", None)
@@ -11069,6 +11850,7 @@ class PSIPlannerApp:
             except Exception:
                 # 旧APIなら self.show_psi(...)
                 self.show_psi("outbound", "demand")
+
     def show_world_map_view(self):
         """現在選択中の製品を赤ハイライトして世界地図を表示。"""
         prod = getattr(self, "product_selected", None)
@@ -11115,10 +11897,13 @@ class PSIPlannerApp:
             #self.show_psi_by_product("outbound", "demand", product)
             try:
                 #self.show_psi_overview(prod, primary_layer="supply", fallback_to_demand=True)
+
+                #@251126 MEMOここをCSV/SQLで切り替える?
                 self.show_psi_overview(product, primary_layer="supply",
                             fallback_to_demand=True, skip_empty=True)
             except Exception as e:
                 print("[WARN] psi overview (on change):", e)
+
     def _fit_world_map_to_data(self):
         # 既に show_world_map 側で after_idle しているなら不要。保険で用意。
         try:
@@ -12114,6 +12899,7 @@ class PSIPlannerApp:
             self._network_click_cid = self.canvas_network.mpl_connect(
                 'button_press_event', self.on_network_click
             )
+
     def view_nx_matlib4opt(self):
         self._ensure_network_axes()
         ax = self.ax_network
@@ -12351,6 +13137,8 @@ class PSIPlannerApp:
             return float(s)
         except Exception:
             return None
+        
+
     def _collect_geo_points(self):
         """node_geo由来のlon/latが入っているノードだけ抽出"""
         pts = []
@@ -12372,6 +13160,7 @@ class PSIPlannerApp:
             name = getattr(n, "name", getattr(n, "node_name", ""))
             pts.append((lon, lat, name))
         return pts
+    
     def _apply_world_limits(self, ax, pts=None, mode="global"):
         """地図の表示範囲とアスペクトを安定化"""
         ax.set_aspect("equal", adjustable="box")
@@ -12386,6 +13175,7 @@ class PSIPlannerApp:
         dy = max(2.0, (ymax - ymin) * 0.10)
         ax.set_xlim(max(-180, xmin - dx), min(180, xmax + dx))
         ax.set_ylim(max(-90,  ymin - dy), min(90,  ymax + dy))
+
     # ==================================================================
     # Network Graph Helper
     # ==================================================================

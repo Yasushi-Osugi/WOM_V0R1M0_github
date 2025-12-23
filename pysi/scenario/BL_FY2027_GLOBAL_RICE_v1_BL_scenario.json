@@ -1,0 +1,131 @@
+{
+  "scenario_type": "BL",
+  "scenario_id": "BL_FY2027_GLOBAL_RICE_v1",
+  "name": "FY2027 Global Rice Baseline",
+  "label": "FY2027 グローバル米・内部基準計画",
+  "version": "1.0",
+  "fiscal_year": 2027,
+  "horizon_weeks": 52,
+  "created_at": "2025-11-29T09:00:00+09:00",
+  "author": "WOM-Owner",
+  "tags": [
+    "GLOBAL_RICE",
+    "BASELINE",
+    "FY2027",
+    "INTERNAL_PLAN"
+  ],
+
+  "meta": {
+    "description": "為替・地政学は平常水準を前提とした FY2027 グローバル米サプライチェーンの内部基準計画。",
+    "business_unit": "Global Rice Business",
+    "currency": "JPY",
+    "calendar": "445",
+    "notes": [
+      "需要は過去3年間の平均成長率をベースに 1.5%/年 で成長",
+      "CAPEX は既決案件のみ実行、追加投資は行わない",
+      "在庫水準は現状維持（安全在庫係数のみ微調整）"
+    ]
+  },
+
+  "kpi_targets": {
+    "service_level": {
+      "target_fill_rate_pct": 97.0,
+      "max_stockout_rate_pct": 1.0
+    },
+    "inventory": {
+      "max_days_of_supply_global": 60,
+      "target_weeks_of_supply_leaf": 4,
+      "safety_stock_factor_leaf": 1.2
+    },
+    "financial": {
+      "target_gross_margin_pct": 18.0,
+      "target_operating_margin_pct": 8.0,
+      "max_inventory_to_sales_ratio": 0.18,
+      "max_capex_budget_mjpy": 0.0
+    },
+    "capacity": {
+      "min_utilization_pct": 70.0,
+      "max_utilization_pct": 95.0
+    }
+  },
+
+  "capacity_policy": {
+    "node_capacity_mode": "fixed", 
+    "node_capacity_adjustment": [],
+    "edge_flow_constraints": {
+      "default_max_flow_lots_per_week": 999999,
+      "exceptions": []
+    }
+  },
+
+  "inventory_policy": {
+    "buffer_strategy": "mixed",
+    "target_buffer_nodes": [
+      "WS1JPN",
+      "WS2JPN",
+      "GR_JPN"
+    ],
+    "rules_by_node_type": {
+      "factory": {
+        "min_weeks_of_supply": 1,
+        "max_weeks_of_supply": 3
+      },
+      "warehouse": {
+        "min_weeks_of_supply": 3,
+        "max_weeks_of_supply": 8
+      },
+      "retail": {
+        "min_weeks_of_supply": 1,
+        "max_weeks_of_supply": 4
+      }
+    }
+  },
+
+  "demand_policy": {
+    "planning_mode": "consensus",
+    "growth_assumption_pct_per_year": 1.5,
+    "elasticity_model": "baseline",
+    "elasticity_default": -0.3,
+    "promotion_uplift_default_pct": 5.0,
+    "leaf_node_priority": [
+      "CS_JPN",
+      "CS_CAL"
+    ]
+  },
+
+  "cost_assumptions": {
+    "currency_pairs": {
+      "USDJPY": 145.0,
+      "EURJPY": 155.0
+    },
+    "logistics_cost_index": 1.00,
+    "energy_cost_index": 1.00,
+    "tariff_profile": "current_law_2025",
+    "financing_cost_pct": 1.0
+  },
+
+  "plugin_config": {
+    "optimizer": {
+      "enabled": true,
+      "objective": "profit_max_with_service_constraint",
+      "capex_allowed": false
+    },
+    "alloc_jit_priority": {
+      "enabled": true,
+      "jit_weight": 1.0
+    },
+    "capacity_clip": {
+      "enabled": true,
+      "mode": "hard"
+    },
+    "demand_wave": {
+      "enabled": true,
+      "seasonality_profile": "rice_standard"
+    },
+    "diagnostics": {
+      "enabled": true,
+      "alert_on_stockout_pct": 1.0,
+      "alert_on_overstock_weeks": 12
+    }
+  }
+}

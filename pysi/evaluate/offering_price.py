@@ -454,7 +454,9 @@ def build_offering_price_frame(
     df = df.sort_values(["product_name", "depth", "node_name"], kind="mergesort").reset_index(drop=True)
 
     #@251010 ADD for Hook and Plugin
-    from pysi.hooks.core import hooks
+    from pysi.core.hooks.core import hooks
+    #from pysi.hooks.core import hooks
+
     # df を返す直前
     df = hooks.apply_filters(
         "offering_price_df", df,

@@ -246,7 +246,9 @@ def build_cost_df_from_sql(db_path: str, scenario_id: str | None = None) -> pd.D
 
 
     #@261010 ADD for Hook and Plugin
-    from pysi.hooks.core import hooks
+    from pysi.core.hooks.core import hooks
+    #from pysi.hooks.core import hooks
+
     # df を返す直前
     out_cost_df = hooks.apply_filters(
     "cost_df", out_cost_df,

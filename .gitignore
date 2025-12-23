@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.log
+out/
+plan_data/
+var/
+*.sqlite
+*.sqlite3
+*.db
+~$*.docx

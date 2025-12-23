@@ -243,8 +243,13 @@ class PlanEnv:
         self._load_cost_tables()
         # --- 価格伝播の実行（TOBE/ASIS）---
         self._run_price_propagation()
-        # --- 月次需要 → 週次PSIスロットに変換（if exists）---
-        self.init_psi_spaces_and_demand()
+
+        # --- 需要生成とPSI初期化は pipeline plugin 側へ移管 ---
+        # (DemandProvider plugin が env.weekly_demand を作り、init_psi_spaces_and_demand() を呼ぶ)
+        #@STOP
+        ## --- 月次需要 → 週次PSIスロットに変換（if exists）---
+        #self.init_psi_spaces_and_demand()
+        
         # --- オファリング価格を出力 ---
         self.export_offering_prices(os.path.join(self.directory, "offering_price_ASIS_TOBE.csv"))
         # --- 終了ログ ---
@@ -885,7 +890,10 @@ class PlanEnv:
                 stack.extend(getattr(n, "children", []) or [])
         def _alloc_psi_for_tree(root, plan_range, plan_year_st):
             """PSI器の確保。PlanNodeにネイティブAPIがあれば使用し、無ければ手動で確保。"""
-            weeks = 53 * int(plan_range)
+
+            weeks = int(getattr(self, "weeks_count", 53 * int(plan_range)))
+            #weeks = 53 * int(plan_range)
+            
             ok = False
             if hasattr(root, "set_plan_range_lot_counts"):
                 try:
