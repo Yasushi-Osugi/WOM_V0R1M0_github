@@ -47,6 +47,7 @@ V0R1M0 の公開版では、
 
 ```bash
 python main.py --backend mvp --skip-orchestrate --csv data --scenario Baseline --ui cockpit
+```
 2) このコマンドの意味
 •	--backend mvp
 o	教材用の軽量実行バックエンドを使用
@@ -152,7 +153,7 @@ From the repository root:
 
 ```bash
 python -m tools.run_rice_v0
-
+```
 ---
 
 ## How the simulation works (V0)
