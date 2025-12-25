@@ -109,3 +109,103 @@ ________________________________________
 （補足）
 •	本公開版では SQL / DB 実行経路は対象外です。
 •	実行ロジックの中核は pysi/ 配下（pipeline / plugins / gui）にあります。
+
+# WOM Tutorial V0: Rice Supply Chain (3-node PSI)
+
+This tutorial provides a minimal, industry-specific WOM model for **Japanese rice** using only three nodes:
+
+- **MOM_RICE**: Mother plant / harvest production
+- **DAD_RICE**: Inventory buffer (warehouse)
+- **MKT_RICE**: Market consumption (leaf)
+
+The goal is to understand **why inventory exists** and how it bridges the time-gap between seasonal production and stable consumption.
+
+---
+
+## Model Structure
+
+MOM_RICE → DAD_RICE → MKT_RICE
+
+### Roles
+| Node | Meaning | Key characteristic |
+|---|---|---|
+| MOM_RICE | Production / harvest | Concentrated seasonal supply |
+| DAD_RICE | Buffer inventory | Smooths annual demand vs harvest |
+| MKT_RICE | Consumption market | Stable monthly demand (slightly decreasing) |
+
+---
+
+## Data Files
+
+This tutorial uses three CSV files:
+
+- `rice_nodes.csv` : node definitions (for readability)
+- `rice_flow.csv` : structure definition (for readability / future extension)
+- `rice_timeseries.csv` : time-series inputs for demand & production
+
+> In V0, `nodes` and `flow` are mainly for learning the structure.  
+> The simulation uses `rice_timeseries.csv` to compute PSI.
+
+## How to run (Rice V0)
+
+From the repository root:
+
+```bash
+python -m tools.run_rice_v0
+
+---
+
+## How the simulation works (V0)
+
+For each month:
+
+1. Inventory receives production at MOM (`production`)
+2. Market demand occurs at MKT (`demand`)
+3. Sales are fulfilled from inventory (DAD)
+4. Remaining demand becomes **shortage**
+5. Ending inventory is carried over
+
+---
+
+## Output (PSI)
+
+We visualize:
+- **Demand (market requirement)**
+- **Production (P)**
+- **Sales (S, fulfilled demand)**
+- **Inventory (I)**
+and optionally Capacity line if provided.
+
+---
+
+## Rice V0 – Completed PSI View
+
+The figure below represents the full monthly PSI loop for Rice V0.
+![Rice V0 PSI with Capacity](docs/images/rice_v0_psi.png)
+
+**Figure:**
+Seasonal rice harvest (Production), capacity constraint (red frame),
+stable market demand, and inventory buffering across the year.
+
+This figure shows how inventory (DAD_RICE) buffers the time gap
+between seasonal production (MOM_RICE) and stable market demand (MKT_RICE),
+under explicit production capacity constraints.
+
+---
+
+## Exercises
+
+1. Reduce harvest production by 10%: what happens to shortage and inventory?
+2. Make demand flat (no decrease): what happens to ending inventory?
+3. Shift harvest by +1 month: does shortage appear?
+
+---
+
+## Scope (V0)
+
+This tutorial intentionally does **not** include:
+- Optimization
+- Pricing / profit
+- Multiple warehouses
+
+Those will be covered in later tutorials (smartphone, pharma cold chain).
